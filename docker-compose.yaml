@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  frontend:
+    container_name: react-strava-cycling
+    build:
+      context: .
+      args:
+        - BUILD_ENV=development
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 5173:5173
+    volumes:
+      - .:/var/www
+      - /var/www/node_modules
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
