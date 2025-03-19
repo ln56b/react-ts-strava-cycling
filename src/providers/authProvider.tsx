@@ -8,6 +8,7 @@ const initialState: AuthState = {
 	stravaToken: null,
 	loginAction: () => {},
 	signupAction: () => {},
+	loginToStravaAction: () => {},
 };
 interface AuthState {
 	accessToken: string | null;
@@ -21,6 +22,7 @@ interface AuthState {
 		stravaId: number,
 		stravaToken: string
 	) => void;
+	loginToStravaAction: (stravaCode: string) => void;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -110,6 +112,30 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	const loginToStravaAction = async (code: string) => {
+		try {
+			const response = await fetch(`${apiUrl}/users/strava-token`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ code }),
+			});
+
+			const res = await response.json();
+			if (res) {
+				console.log('loginToStravaAction', res);
+				setStravaToken(res.access_token);
+				localStorage.setItem('stravaToken', res.access_token);
+
+				return;
+			}
+			throw new Error(res.message);
+		} catch (err) {
+			console.log('Error', err);
+		}
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -119,6 +145,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				stravaToken,
 				signupAction,
 				loginAction,
+				loginToStravaAction,
 			}}
 		>
 			{children}
