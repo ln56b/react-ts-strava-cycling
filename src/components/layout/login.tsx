@@ -4,8 +4,9 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
+import AuthProvider, { useAuth } from '@/providers/authProvider';
 
-const emailSchema = z.object({
+const loginSchema = z.object({
 	email: z.string().email().min(2, {
 		message: 'Email should be at least 2 characters',
 	}),
@@ -15,6 +16,8 @@ const emailSchema = z.object({
 });
 
 export default function Login() {
+	const auth = useAuth();
+
 	const form = useForm({
 		defaultValues: {
 			email: '',
@@ -22,9 +25,10 @@ export default function Login() {
 		},
 		onSubmit: async ({ value }) => {
 			console.log(value);
+			auth.loginAction(value.email, value.password);
 		},
 		validators: {
-			onChange: emailSchema,
+			onChange: loginSchema,
 		},
 	});
 
