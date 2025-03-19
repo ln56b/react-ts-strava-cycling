@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
-import { useAuth } from '@/providers/authProvider';
+import { UseAuth } from '@/providers/authProvider';
 
 const signupSchema = z.object({
 	email: z.string().email().min(2, {
@@ -22,7 +22,7 @@ const signupSchema = z.object({
 });
 
 export default function Signup() {
-	const auth = useAuth();
+	const auth = UseAuth();
 
 	const form = useForm({
 		defaultValues: {

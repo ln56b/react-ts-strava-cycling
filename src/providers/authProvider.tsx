@@ -26,7 +26,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState | null>(null);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-	const apiUrl = 'http://localhost:3000/api/auth';
+	const apiUrl = 'http://localhost:3000/api';
 
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [refreshToken, setRefreshToken] = useState<string | null>(null);
@@ -42,7 +42,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 		stravaToken: string
 	) => {
 		try {
-			const response = await fetch(`${apiUrl}/signup`, {
+			const response = await fetch(`${apiUrl}/auth/signup`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const loginAction = async (email: string, password: string) => {
 		try {
-			const response = await fetch(`${apiUrl}/login`, {
+			const loginResponse = await fetch(`${apiUrl}/auth/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -80,14 +80,31 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				body: JSON.stringify({ email, password }),
 			});
 
-			const res = await response.json();
-			if (res) {
-				setAccessToken(res.access_token);
-				localStorage.setItem('accessToken', res.access_token);
+			const loginRes = await loginResponse.json();
+
+			if (loginRes) {
+				setAccessToken(loginRes.access_token);
+				localStorage.setItem('accessToken', loginRes.access_token);
+
+				const stravaIdResponse = await fetch(`${apiUrl}/users`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${loginRes.access_token}`,
+					},
+				});
+
+				const stravaIdRes = await stravaIdResponse.json();
+
+				if (stravaIdRes) {
+					console.log('stravaId res', stravaIdRes);
+					setStravaId(stravaIdRes.strava_id);
+				}
+
 				navigate('/dashboard');
 				return;
 			}
-			throw new Error(res.message);
+			throw new Error(loginRes.message);
 		} catch (err) {
 			console.log('Error', err);
 		}
@@ -111,7 +128,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export default AuthProvider;
 
-export const useAuth = () => {
+export const UseAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {
 		throw new Error('useAuth must be used within an AuthProvider');

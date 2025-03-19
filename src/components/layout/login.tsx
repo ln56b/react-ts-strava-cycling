@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
-import AuthProvider, { useAuth } from '@/providers/authProvider';
+import { UseAuth } from '@/providers/authProvider';
 
 const loginSchema = z.object({
 	email: z.string().email().min(2, {
@@ -16,7 +16,7 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
-	const auth = useAuth();
+	const auth = UseAuth();
 
 	const form = useForm({
 		defaultValues: {
