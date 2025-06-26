@@ -1,26 +1,22 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {
+	createContext,
+	ReactNode,
+	useCallback,
+	useContext,
+	useMemo,
+	useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const initialState: AuthState = {
-	accessToken: null,
-	refreshToken: null,
-	stravaId: null,
-	stravaToken: null,
-	loginAction: () => {},
-	signupAction: () => {},
-	loginToStravaAction: () => {},
-};
 interface AuthState {
 	accessToken: string | null;
 	refreshToken: string | null;
-	stravaId: number | null;
-	stravaToken: string | null;
 	loginAction: (email: string, password: string) => void;
 	signupAction: (
 		email: string,
 		password: string,
 		stravaId: number,
-		stravaToken: string
+		stravaSecret: string
 	) => void;
 	loginToStravaAction: (stravaCode: string) => void;
 }
@@ -30,132 +26,147 @@ const AuthContext = createContext<AuthState | null>(null);
 const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const apiUrl = 'http://localhost:3000/api';
 
-	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const [accessToken, setAccessToken] = useState<string | null>(
+		localStorage.getItem('accessToken')
+	);
 	const [refreshToken, setRefreshToken] = useState<string | null>(null);
-	const [stravaId, setStravaId] = useState<number | null>(null);
-	const [stravaToken, setStravaToken] = useState<string | null>(null);
 
 	const navigate = useNavigate();
 
-	const signupAction = async (
-		email: string,
-		password: string,
-		stravaId: number,
-		stravaToken: string
-	) => {
-		try {
-			const response = await fetch(`${apiUrl}/auth/signup`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					email,
-					password,
-					strava_id: stravaId,
-					strava_token: stravaToken,
-				}),
-			});
-
-			const res = await response.json();
-			if (res.data) {
-				setAccessToken(res.data.access_token);
-				setStravaId(stravaId);
-				localStorage.setItem('accessToken', res.data.access_token);
-
-				navigate('/dashboard');
-				return;
-			}
-			throw new Error(res.message);
-		} catch (err) {
-			console.log('Error', err);
-		}
-	};
-
-	const loginAction = async (email: string, password: string) => {
-		try {
-			const loginResponse = await fetch(`${apiUrl}/auth/login`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ email, password }),
-			});
-
-			const loginRes = await loginResponse.json();
-
-			if (loginRes) {
-				setAccessToken(loginRes.access_token);
-				localStorage.setItem('accessToken', loginRes.access_token);
-
-				const stravaIdResponse = await fetch(`${apiUrl}/users`, {
-					method: 'GET',
+	const signupAction = useCallback(
+		async (
+			email: string,
+			password: string,
+			stravaId: number,
+			stravaSecret: string
+		) => {
+			try {
+				const response = await fetch(`${apiUrl}/auth/signup`, {
+					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${loginRes.access_token}`,
 					},
+					body: JSON.stringify({
+						email,
+						password,
+						strava_id: stravaId,
+						strava_secret: stravaSecret,
+					}),
 				});
 
-				const stravaIdRes = await stravaIdResponse.json();
+				const res = await response.json();
+				if (res.data) {
+					setAccessToken(res.data.access_token);
+					setRefreshToken(res.data.refresh_token);
+					localStorage.setItem('accessToken', res.data.access_token);
+					localStorage.setItem('refreshToken', res.data.refresh_token);
 
-				if (stravaIdRes) {
-					console.log('stravaId res', stravaIdRes);
-					setStravaId(stravaIdRes.strava_id);
+					navigate('/dashboard');
+					return;
 				}
-
-				navigate('/dashboard');
-				return;
+				throw new Error(res.message);
+			} catch (err) {
+				console.log('Error', err);
 			}
-			throw new Error(loginRes.message);
-		} catch (err) {
-			console.log('Error', err);
-		}
-	};
-
-	const loginToStravaAction = async (code: string) => {
-		try {
-			const response = await fetch(`${apiUrl}/users/strava-token`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ code }),
-			});
-
-			const res = await response.json();
-			if (res) {
-				console.log('loginToStravaAction', res);
-				setStravaToken(res.access_token);
-				localStorage.setItem('stravaToken', res.access_token);
-
-				return;
-			}
-			throw new Error(res.message);
-		} catch (err) {
-			console.log('Error', err);
-		}
-	};
-
-	return (
-		<AuthContext.Provider
-			value={{
-				accessToken,
-				refreshToken,
-				stravaId,
-				stravaToken,
-				signupAction,
-				loginAction,
-				loginToStravaAction,
-			}}
-		>
-			{children}
-		</AuthContext.Provider>
+		},
+		[navigate]
 	);
+
+	const loginAction = useCallback(
+		async (email: string, password: string) => {
+			try {
+				const loginResponse = await fetch(`${apiUrl}/auth/login`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ email, password }),
+				});
+
+				const loginRes = await loginResponse.json();
+
+				if (loginRes) {
+					localStorage.setItem('accessToken', loginRes.access_token);
+
+					const stravaIdResponse = await fetch(`${apiUrl}/users`, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${loginRes.access_token}`,
+						},
+					});
+
+					const stravaIdRes = await stravaIdResponse.json();
+
+					if (stravaIdRes) {
+						localStorage.setItem('stravaId', stravaIdRes.strava_id);
+					}
+
+					navigate('/dashboard');
+					return;
+				}
+				throw new Error(loginRes.message);
+			} catch (err) {
+				console.log('Error', err);
+			}
+		},
+		[navigate]
+	);
+
+	const loginToStravaAction = useCallback(
+		async (code: string) => {
+			if (!code) return;
+
+			try {
+				const accessToken = localStorage.getItem('accessToken');
+				if (!accessToken) {
+					throw new Error('Access Token not found');
+				}
+				const response = await fetch(`${apiUrl}/users/strava-token`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body: JSON.stringify({ code }),
+				});
+				const res = await response.json();
+				if (res.access_token) {
+					setAccessToken(res.access_token);
+					setRefreshToken(res.refresh_token);
+					localStorage.setItem('tokenExpiresAt', res.expires_at);
+					localStorage.setItem('stravaCode', code);
+					localStorage.setItem('accessToken', res.access_token);
+					localStorage.setItem('refreshToken', res.refresh_token);
+
+					return;
+				}
+				throw new Error(res.message);
+			} catch (err) {
+				console.log('Error', err);
+			}
+		},
+		[apiUrl]
+	);
+
+	const contextValue = useMemo(
+		() => ({
+			accessToken,
+			refreshToken,
+			signupAction,
+			loginAction,
+			loginToStravaAction,
+		}),
+		[accessToken, refreshToken, signupAction, loginAction, loginToStravaAction]
+	);
+
+	return <AuthContext value={contextValue}>{children}</AuthContext>;
 };
 
 export default AuthProvider;
 
-export const UseAuth = () => {
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {
 		throw new Error('useAuth must be used within an AuthProvider');

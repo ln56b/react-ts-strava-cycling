@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
-import { UseAuth } from '@/providers/authProvider';
+import { useAuth } from '@/providers/authProvider';
 
 const signupSchema = z.object({
 	email: z.string().email().min(2, {
@@ -22,7 +22,7 @@ const signupSchema = z.object({
 });
 
 export default function Signup() {
-	const auth = UseAuth();
+	const auth = useAuth();
 
 	const form = useForm({
 		defaultValues: {
@@ -32,7 +32,6 @@ export default function Signup() {
 			strava_secret: '',
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value);
 			auth.signupAction(
 				value.email,
 				value.password,

@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
+import { useAuth } from '@/providers/authProvider';
 import { Link } from 'react-router';
 
 const loginSchema = z.object({
@@ -16,7 +17,7 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
-	const auth = UseAuth();
+	const auth = useAuth();
 
 	const form = useForm({
 		defaultValues: {
@@ -24,7 +25,6 @@ export default function Login() {
 			password: '',
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value);
 			auth.loginAction(value.email, value.password);
 		},
 		validators: {
