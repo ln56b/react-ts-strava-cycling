@@ -5,6 +5,7 @@ import AuthProvider from './providers/authProvider';
 import PrivateRoute from './guards/privateRoute';
 import Dashboard from './components/layout/dashboard';
 import Signup from './components/layout/signup';
+import { Toaster } from 'sonner';
 
 const queryClient = new QueryClient();
 
@@ -14,11 +15,12 @@ function App() {
 			<BrowserRouter>
 				<QueryClientProvider client={queryClient}>
 					<AuthProvider>
+						<Toaster />
 						<Routes>
 							<Route path="/" element={<Home />} />
+							<Route path="/signup" element={<Signup />} />
 							<Route element={<PrivateRoute />}>
 								<Route path="/dashboard" element={<Dashboard />} />
-								<Route path="/signup" element={<Signup />} />
 							</Route>
 						</Routes>
 					</AuthProvider>

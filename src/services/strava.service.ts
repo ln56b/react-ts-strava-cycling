@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 const apiUrl = 'http://localhost:3000/api';
 
 export const loadActivities = async () => {
@@ -7,29 +9,26 @@ export const loadActivities = async () => {
 		await refreshStravaTokens();
 	}
 
-	try {
-		const accessToken = localStorage.getItem('accessToken');
-		if (!accessToken) {
-			throw new Error('Access Token not found');
-		}
-
-		const response = await fetch(
-			`https://www.strava.com/api/v3/athlete/activities`,
-			{
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-			}
-		);
-
-		const res = await response.json();
-		if (res) {
-			return res;
-		}
-		throw new Error(res.message);
-	} catch (err) {
-		console.log('Error', err);
+	const accessToken = localStorage.getItem('accessToken');
+	if (!accessToken) {
+		toast.error('You are not identified');
+		return;
 	}
+
+	const response = await fetch(
+		`https://www.strava.com/api/v3/athlete/activities`,
+		{
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		}
+	);
+
+	const res = await response.json();
+	if (res) {
+		return res;
+	}
+	toast.error(res.message);
 };
 
 const checkStravaTokensValidity = async () => {
@@ -47,11 +46,13 @@ const checkStravaTokensValidity = async () => {
 const refreshStravaTokens = async () => {
 	const accessToken = localStorage.getItem('accessToken');
 	if (!accessToken) {
-		throw new Error('Access Token not found');
+		toast.error('You are not identified');
+		return;
 	}
 	const refreshToken = localStorage.getItem('refreshToken');
 	if (!refreshToken) {
-		throw new Error('Refresh token not found');
+		toast.error('You are not identified');
+		return;
 	}
 
 	try {

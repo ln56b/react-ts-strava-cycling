@@ -1,12 +1,12 @@
-import { Button } from '../ui/button';
-import { authorizeStrava } from '@/services/users.service';
-import { loadActivities } from '@/services/strava.service';
 import { useAuth } from '@/providers/authProvider';
-import { useSearchParams } from 'react-router';
+import { loadActivities } from '@/services/strava.service';
+import { authorizeStrava } from '@/services/users.service';
 import { useEffect } from 'react';
+import { useSearchParams } from 'react-router';
+import { Button } from '../ui/button';
 
 export default function Dashboard() {
-	const { loginToStravaAction } = useAuth();
+	const { loginToStravaAction, loggedInToStrava } = useAuth();
 	const [searchParams] = useSearchParams();
 
 	useEffect(() => {
@@ -29,8 +29,11 @@ export default function Dashboard() {
 	return (
 		<div>
 			Dashboard component works
-			<Button onClick={connectToStrava}>Connect To Strava</Button>
-			<Button onClick={loadStravaActivities}>Load activities</Button>
+			{loggedInToStrava ? (
+				<Button onClick={loadStravaActivities}>Load activities</Button>
+			) : (
+				<Button onClick={connectToStrava}>Connect To Strava</Button>
+			)}
 		</div>
 	);
 }
