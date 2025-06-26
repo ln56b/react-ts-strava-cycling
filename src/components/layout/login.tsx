@@ -26,6 +26,7 @@ export default function Login() {
 		},
 		onSubmit: async ({ value }) => {
 			auth.loginAction(value.email, value.password);
+			form.reset();
 		},
 		validators: {
 			onChange: loginSchema,

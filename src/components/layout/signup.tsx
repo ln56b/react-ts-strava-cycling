@@ -38,6 +38,7 @@ export default function Signup() {
 				value.strava_id,
 				value.strava_secret
 			);
+			form.reset();
 		},
 		validators: {
 			onChange: signupSchema,
