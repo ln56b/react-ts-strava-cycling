@@ -22,6 +22,7 @@ interface AuthState {
 		stravaSecret: string
 	) => void;
 	loginToStravaAction: (stravaCode: string) => void;
+	logout: () => void;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -150,6 +151,17 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 		[apiUrl]
 	);
 
+	const logout = useCallback(() => {
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
+		localStorage.removeItem('tokenExpiresAt');
+		localStorage.removeItem('stravaCode');
+		setAccessToken(null);
+		setRefreshToken(null);
+		setLoggedInToStrava(false);
+		navigate('/');
+	}, [navigate]);
+
 	const contextValue = useMemo(
 		() => ({
 			accessToken,
@@ -158,6 +170,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 			signupAction,
 			loginAction,
 			loginToStravaAction,
+			logout,
 		}),
 		[
 			accessToken,
@@ -166,6 +179,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 			signupAction,
 			loginAction,
 			loginToStravaAction,
+			logout,
 		]
 	);
 

@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router';
 import { Button } from '../ui/button';
 
 export default function Dashboard() {
-	const { loginToStravaAction, loggedInToStrava } = useAuth();
+	const { loginToStravaAction, loggedInToStrava, logout } = useAuth();
 	const [searchParams] = useSearchParams();
 
 	useEffect(() => {
@@ -30,7 +30,10 @@ export default function Dashboard() {
 		<div>
 			Dashboard component works
 			{loggedInToStrava ? (
-				<Button onClick={loadStravaActivities}>Load activities</Button>
+				<div>
+					<Button onClick={loadStravaActivities}>Load activities</Button>
+					<Button onClick={logout}>Logout</Button>
+				</div>
 			) : (
 				<Button onClick={connectToStrava}>Connect To Strava</Button>
 			)}
