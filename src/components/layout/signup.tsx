@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
-import { UseAuth } from '@/providers/authProvider';
+import { useAuth } from '@/providers/authProvider';
 
 const signupSchema = z.object({
 	email: z.string().email().min(2, {
@@ -22,7 +22,7 @@ const signupSchema = z.object({
 });
 
 export default function Signup() {
-	const auth = UseAuth();
+	const auth = useAuth();
 
 	const form = useForm({
 		defaultValues: {
@@ -32,7 +32,6 @@ export default function Signup() {
 			strava_secret: '',
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value);
 			auth.signupAction(
 				value.email,
 				value.password,
@@ -59,7 +58,7 @@ export default function Signup() {
 	return (
 		<div className="flex justify-center my-[100px] mx-0">
 			<Card className="mt-5">
-				<h2 className="mt-2 text-2xl text-center">Welcome back !</h2>
+				<h2 className="mt-2 text-2xl text-center">Create an account</h2>
 				<fieldset>
 					<form.Field name="email">
 						{(field) => (
@@ -75,7 +74,10 @@ export default function Signup() {
 								/>
 								{touched.email && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
-											<p className="p-2 italic text-destructive">
+											<p
+												key={field.name}
+												className="p-2 italic text-destructive"
+											>
 												{error?.message}
 											</p>
 									  ))
@@ -100,7 +102,10 @@ export default function Signup() {
 								/>
 								{touched.password && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
-											<p className="p-2 italic text-destructive">
+											<p
+												key={field.name}
+												className="p-2 italic text-destructive"
+											>
 												{error?.message}
 											</p>
 									  ))
@@ -118,14 +123,17 @@ export default function Signup() {
 									id={field.name}
 									name={field.name}
 									value={field.state.value}
-									type="text"
-									placeholder="Enter your password"
+									type="number"
+									placeholder="Strava ID"
 									onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 									onBlur={() => handleBlur('strava_id')}
 								/>
 								{touched.password && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
-											<p className="p-2 italic text-destructive">
+											<p
+												key={field.name}
+												className="p-2 italic text-destructive"
+											>
 												{error?.message}
 											</p>
 									  ))
@@ -150,7 +158,10 @@ export default function Signup() {
 								/>
 								{touched.password && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
-											<p className="p-2 italic text-destructive">
+											<p
+												key={field.name}
+												className="p-2 italic text-destructive"
+											>
 												{error?.message}
 											</p>
 									  ))
@@ -160,7 +171,7 @@ export default function Signup() {
 					</form.Field>
 				</fieldset>
 
-				<Button onClick={form.handleSubmit}>email</Button>
+				<Button onClick={form.handleSubmit}>Submit</Button>
 			</Card>
 		</div>
 	);

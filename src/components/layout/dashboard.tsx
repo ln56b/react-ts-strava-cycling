@@ -1,34 +1,29 @@
-import { UseAuth } from '@/providers/authProvider';
-import { use, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { authorizeStrava } from '@/services/users.service';
-import { useSearchParams } from 'react-router-dom';
 import { loadActivities } from '@/services/strava.service';
+import { useAuth } from '@/providers/authProvider';
+import { useSearchParams } from 'react-router';
+import { useEffect } from 'react';
 
 export default function Dashboard() {
-	const auth = UseAuth();
+	const { loginToStravaAction } = useAuth();
 	const [searchParams] = useSearchParams();
-	const { stravaToken } = auth;
 
 	useEffect(() => {
 		const code = searchParams.get('code');
-		console.log('Dashboard component mounted', code);
-		if (code) auth.loginToStravaAction(code);
-	});
+		if (code) loginToStravaAction(code);
+	}, [searchParams, loginToStravaAction]);
 
 	const connectToStrava = () => {
-		if (!auth.stravaId) {
+		const stravaId = localStorage.getItem('stravaId');
+		if (!stravaId) {
 			throw new Error('Strava ID not found');
 		}
-		authorizeStrava(auth.stravaId);
+		authorizeStrava(Number(stravaId));
 	};
 
 	const loadStravaActivities = () => {
-		const token = stravaToken;
-		if (!token) {
-			throw new Error('Strava Token not found');
-		}
-		loadActivities(token);
+		loadActivities();
 	};
 
 	return (

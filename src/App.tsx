@@ -4,6 +4,7 @@ import Home from './pages/home';
 import AuthProvider from './providers/authProvider';
 import PrivateRoute from './guards/privateRoute';
 import Dashboard from './components/layout/dashboard';
+import Signup from './components/layout/signup';
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ function App() {
 							<Route path="/" element={<Home />} />
 							<Route element={<PrivateRoute />}>
 								<Route path="/dashboard" element={<Dashboard />} />
+								<Route path="/signup" element={<Signup />} />
 							</Route>
 						</Routes>
 					</AuthProvider>

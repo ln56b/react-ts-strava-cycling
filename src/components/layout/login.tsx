@@ -4,7 +4,8 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
-import { UseAuth } from '@/providers/authProvider';
+import { useAuth } from '@/providers/authProvider';
+import { Link } from 'react-router';
 
 const loginSchema = z.object({
 	email: z.string().email().min(2, {
@@ -16,7 +17,7 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
-	const auth = UseAuth();
+	const auth = useAuth();
 
 	const form = useForm({
 		defaultValues: {
@@ -24,7 +25,6 @@ export default function Login() {
 			password: '',
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value);
 			auth.loginAction(value.email, value.password);
 		},
 		validators: {
@@ -60,7 +60,10 @@ export default function Login() {
 								/>
 								{touched.email && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
-											<p className="p-2 italic text-destructive">
+											<p
+												key={field.name}
+												className="p-2 italic text-destructive"
+											>
 												{error?.message}
 											</p>
 									  ))
@@ -85,7 +88,10 @@ export default function Login() {
 								/>
 								{touched.password && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
-											<p className="p-2 italic text-destructive">
+											<p
+												key={field.name}
+												className="p-2 italic text-destructive"
+											>
 												{error?.message}
 											</p>
 									  ))
@@ -95,7 +101,13 @@ export default function Login() {
 					</form.Field>
 				</fieldset>
 
-				<Button onClick={form.handleSubmit}>email</Button>
+				<Button onClick={form.handleSubmit}>Submit</Button>
+				<p>
+					<span className="italic"> Not registered yet ? </span>
+					<Link to="/signup" className="hover:underline">
+						Create an account
+					</Link>
+				</p>
 			</Card>
 		</div>
 	);

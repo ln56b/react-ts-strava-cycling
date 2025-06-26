@@ -1,7 +1,5 @@
 import { environment } from '../environments/environment';
 export const authorizeStrava = async (stravaId: number) => {
-	console.log('stravaId', stravaId);
-
 	if (!stravaId) {
 		throw new Error('Strava ID not found');
 	}
