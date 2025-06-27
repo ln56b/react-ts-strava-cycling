@@ -65,7 +65,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				localStorage.setItem('accessToken', res.access_token);
 				localStorage.setItem('refreshToken', res.refresh_token);
 
-				navigate('/dashboard');
+				navigate('/login-to-strava');
 				toast.success('Welcome to the app!');
 				return;
 			} else {
@@ -104,7 +104,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 					localStorage.setItem('stravaId', stravaIdRes.strava_id);
 				}
 
-				navigate('/dashboard');
+				navigate('/login-to-strava');
 				toast.success('Welcome back!');
 				return;
 			} else {

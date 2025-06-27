@@ -7,6 +7,7 @@ import Dashboard from './components/layout/dashboard';
 import Signup from './components/layout/signup';
 import { Toaster } from 'sonner';
 import ThemeProvider from './providers/themeProvider';
+import LoginToStrava from './components/layout/loginToStrava';
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ function App() {
 								<Route path="/" element={<Home />} />
 								<Route path="/signup" element={<Signup />} />
 								<Route element={<PrivateRoute />}>
+									<Route path="/login-to-strava" element={<LoginToStrava />} />
 									<Route path="/dashboard" element={<Dashboard />} />
 								</Route>
 							</Routes>

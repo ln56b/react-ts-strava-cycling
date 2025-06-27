@@ -5,6 +5,7 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useAuth } from '@/providers/authProvider';
+import { Link } from 'react-router';
 
 const signupSchema = z.object({
 	email: z.string().email().min(2, {
@@ -57,7 +58,11 @@ export default function Signup() {
 	};
 
 	return (
-		<div className="flex justify-center my-[100px] mx-0">
+		<div className="flex flex-col items-center justify-center my-[100px] mx-0">
+			<Link to="/">
+				<i className="fa-solid fa-arrow-left mr-2"></i>
+				Back to login
+			</Link>
 			<Card className="mt-5">
 				<h2 className="mt-2 text-2xl text-center">Create an account</h2>
 				<fieldset>

@@ -105,9 +105,7 @@ export default function Login() {
 				<Button onClick={form.handleSubmit}>Submit</Button>
 				<p>
 					<span className="italic"> Not registered yet ? </span>
-					<Link to="/signup" className="hover:underline">
-						Create an account
-					</Link>
+					<Link to="/signup">Create an account</Link>
 				</p>
 			</Card>
 		</div>
