@@ -4,9 +4,11 @@ import { authorizeStrava } from '@/services/users.service';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { Button } from '../ui/button';
+import { useTheme } from '@/providers/themeProvider';
 
 export default function Dashboard() {
 	const { loginToStravaAction, loggedInToStrava, logout } = useAuth();
+	const { toggleTheme } = useTheme();
 	const [searchParams] = useSearchParams();
 
 	useEffect(() => {
@@ -32,6 +34,7 @@ export default function Dashboard() {
 			{loggedInToStrava ? (
 				<div>
 					<Button onClick={loadStravaActivities}>Load activities</Button>
+					<Button onClick={toggleTheme}>Toggle Theme</Button>
 					<Button onClick={logout}>Logout</Button>
 				</div>
 			) : (

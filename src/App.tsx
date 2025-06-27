@@ -6,6 +6,7 @@ import PrivateRoute from './guards/privateRoute';
 import Dashboard from './components/layout/dashboard';
 import Signup from './components/layout/signup';
 import { Toaster } from 'sonner';
+import ThemeProvider from './providers/themeProvider';
 
 const queryClient = new QueryClient();
 
@@ -15,14 +16,16 @@ function App() {
 			<BrowserRouter>
 				<QueryClientProvider client={queryClient}>
 					<AuthProvider>
-						<Toaster />
-						<Routes>
-							<Route path="/" element={<Home />} />
-							<Route path="/signup" element={<Signup />} />
-							<Route element={<PrivateRoute />}>
-								<Route path="/dashboard" element={<Dashboard />} />
-							</Route>
-						</Routes>
+						<ThemeProvider>
+							<Toaster />
+							<Routes>
+								<Route path="/" element={<Home />} />
+								<Route path="/signup" element={<Signup />} />
+								<Route element={<PrivateRoute />}>
+									<Route path="/dashboard" element={<Dashboard />} />
+								</Route>
+							</Routes>
+						</ThemeProvider>
 					</AuthProvider>
 				</QueryClientProvider>
 			</BrowserRouter>
