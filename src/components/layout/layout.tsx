@@ -2,21 +2,33 @@ import { useAuth } from '@/providers/authProvider';
 import { useTheme } from '@/providers/themeProvider';
 import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
+import Menu from './menu';
+import { useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const { logout } = useAuth();
 	const { toggleTheme, theme } = useTheme();
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	return (
-		<div className="p-4">
-			<div className="flex items-center justify-end gap-2">
+		<div className="p-4 h-screen">
+			<div className="flex gap-2 justify-end items-center">
 				<Switch onClick={toggleTheme}>Toggle Theme</Switch>
 				<Button variant="outline" onClick={logout}>
 					Logout
 				</Button>
 			</div>
-			{children}
-			<div className="absolute bottom-4 right-4	">
+			<div className="lg:grid lg:grid-cols-12 lg:h-9/10">
+				<Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+				<main
+					className={`col-span-12 lg:col-span-10 ${
+						isMenuOpen ? 'opacity-20' : ''
+					}`}
+				>
+					{children}
+				</main>
+			</div>
+			<div className="absolute right-4 bottom-4">
 				<img
 					width={100}
 					src={
