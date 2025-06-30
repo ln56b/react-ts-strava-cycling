@@ -11,10 +11,9 @@ import {
 
 interface BarChartCardProps {
 	title: string;
-	className?: string;
 }
 
-export default function BarChartCard({ title, className }: BarChartCardProps) {
+export default function BarChartCard({ title }: BarChartCardProps) {
 	const data = [
 		{
 			name: 'Page A',
@@ -54,7 +53,7 @@ export default function BarChartCard({ title, className }: BarChartCardProps) {
 	];
 
 	return (
-		<div className={className}>
+		<div className="col-span-12 lg:col-span-6">
 			<h3>{title}</h3>
 			<ResponsiveContainer width="100%" height={400}>
 				<BarChart width={730} height={250} data={data}>

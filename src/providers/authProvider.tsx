@@ -1,3 +1,4 @@
+import { loadActivities } from '@/services/strava.service';
 import {
 	activitiesInitialState,
 	useActivitiesStore,
@@ -147,6 +148,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				localStorage.setItem('refreshToken', res.refresh_token);
 				setLoggedInToStrava(true);
 				toast.success('Successfully connected to Strava!');
+				loadActivities();
 				return;
 			} else {
 				toast.error(res.message);

@@ -11,7 +11,6 @@ import {
 
 interface LineChartCardProps {
 	title: string;
-	className?: string;
 }
 
 const data = [
@@ -59,12 +58,9 @@ const data = [
 	},
 ];
 
-export default function LineChartCard({
-	title,
-	className,
-}: LineChartCardProps) {
+export default function LineChartCard({ title }: LineChartCardProps) {
 	return (
-		<div className={className}>
+		<div className="col-span-12 lg:col-span-6">
 			<h3>{title}</h3>
 			<ResponsiveContainer width="100%" height={400}>
 				<LineChart
