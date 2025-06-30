@@ -1,3 +1,4 @@
+import { useActivitiesStore } from '@/stores/activitiesStore';
 import { toast } from 'sonner';
 
 const apiUrl = 'http://localhost:3000/api';
@@ -26,6 +27,7 @@ export const loadActivities = async () => {
 
 	const res = await response.json();
 	if (res) {
+		useActivitiesStore.setState({ activities: res });
 		return res;
 	}
 	toast.error(res.message);
