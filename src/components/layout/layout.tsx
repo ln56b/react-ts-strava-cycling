@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					{children}
 				</main>
 			</div>
-			<div className="absolute right-4 bottom-4">
+			<div className="fixed right-4 bottom-4">
 				<img
 					width={100}
 					src={
