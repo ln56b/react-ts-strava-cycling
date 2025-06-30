@@ -9,20 +9,27 @@ interface ActivityState {
 	error: string | null;
 }
 
-const initialState: ActivityState = {
+export const activitiesInitialState: ActivityState = {
 	activities: [],
 	loading: false,
 	error: null,
 };
 
 export const useActivitiesStore = create<ActivityState>()(
-	devtools(
-		(set) => ({
-			...initialState,
-			setActivities: (activities: Activity[]) => set({ activities }),
-			setLoading: (loading: boolean) => set({ loading }),
-			setError: (error: string | null) => set({ error }),
-		}),
-		{ name: 'ActivitiesStore' } // Optional name for the store in Redux DevTools
-	)
+	process.env.NODE_ENV === 'development'
+		? devtools(
+				(set) => ({
+					...activitiesInitialState,
+					setActivities: (activities: Activity[]) => set({ activities }),
+					setLoading: (loading: boolean) => set({ loading }),
+					setError: (error: string | null) => set({ error }),
+				}),
+				{ name: 'ActivitiesStore' }
+		  )
+		: (set) => ({
+				...activitiesInitialState,
+				setActivities: (activities: Activity[]) => set({ activities }),
+				setLoading: (loading: boolean) => set({ loading }),
+				setError: (error: string | null) => set({ error }),
+		  })
 );
