@@ -16,14 +16,15 @@ export interface Activity {
 	name: string;
 	achievement_count: number;
 	athlete_count: number;
-	average_speed: number;
+	average_speed: number; // meters per second
+	average_watts: number;
 	comment_count: number;
 	commute: boolean;
 	display_hide_heartrate_option: boolean;
-	distance: number;
-	elapsed_time: number;
-	elev_high: number;
-	elev_low: number;
+	distance: number; // in meters
+	elapsed_time: number; // in seconds
+	elev_high: number; // in meters
+	elev_low: number; // in meters
 	end_latlng: [number, number];
 	external_id: string;
 	flagged: boolean;
@@ -38,17 +39,18 @@ export interface Activity {
 	location_state: string | null;
 	manual: boolean;
 	map: ActivityMap;
-	max_speed: number;
-	moving_time: number;
+	max_speed: number; // meters per second
+	max_watts: number;
+	moving_time: number; // in seconds
 	photo_count: number;
 	pr_count: number;
 	private: boolean;
 	sport_type: string;
-	start_date: string;
-	start_date_local: string;
+	start_date: string; // DateTime in UTC
+	start_date_local: string; // DateTime in local timezone
 	start_latlng: [number, number];
 	timezone: string;
-	total_elevation_gain: number;
+	total_elevation_gain: number; // in meters
 	total_photo_count: number;
 	trainer: boolean;
 	type: string;

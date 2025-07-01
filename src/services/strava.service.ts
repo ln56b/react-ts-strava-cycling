@@ -1,9 +1,12 @@
+import { Activity } from '@/interfaces/strava';
 import { useActivitiesStore } from '@/stores/activitiesStore';
 import { toast } from 'sonner';
 
 const apiUrl = 'http://localhost:3000/api';
 
-export const loadActivities = async () => {
+export const loadActivities = async (
+	params: Record<string, string>
+): Promise<Activity[] | undefined> => {
 	const tokenValid = await checkStravaTokensValidity();
 
 	if (!tokenValid) {
@@ -16,14 +19,17 @@ export const loadActivities = async () => {
 		return;
 	}
 
-	const response = await fetch(
-		`https://www.strava.com/api/v3/athlete/activities`,
-		{
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
-		}
-	);
+	const queryParams = new URLSearchParams({
+		...params,
+		per_page: '100',
+	});
+
+	const url = `https://www.strava.com/api/v3/athlete/activities?${queryParams.toString()}`;
+	const response = await fetch(`${url}`, {
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
 
 	const res = await response.json();
 	if (res) {
