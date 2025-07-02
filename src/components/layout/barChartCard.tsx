@@ -11,59 +11,28 @@ import {
 
 interface BarChartCardProps {
 	title: string;
+	data: any[];
+	key1: string;
+	key2: string;
 }
 
-export default function BarChartCard({ title }: BarChartCardProps) {
-	const data = [
-		{
-			name: 'Page A',
-			uv: 4000,
-			pv: 2400,
-		},
-		{
-			name: 'Page B',
-			uv: 3000,
-			pv: 1398,
-		},
-		{
-			name: 'Page C',
-			uv: 2000,
-			pv: 9800,
-		},
-		{
-			name: 'Page D',
-			uv: 2780,
-			pv: 3908,
-		},
-		{
-			name: 'Page E',
-			uv: 1890,
-			pv: 4800,
-		},
-		{
-			name: 'Page F',
-			uv: 2390,
-			pv: 3800,
-		},
-		{
-			name: 'Page G',
-			uv: 3490,
-			pv: 4300,
-		},
-	];
-
+export default function BarChartCard({
+	title,
+	data,
+	key1,
+	key2,
+}: BarChartCardProps) {
 	return (
 		<div className="col-span-12 lg:col-span-6">
 			<h3>{title}</h3>
 			<ResponsiveContainer width="100%" height={400}>
 				<BarChart width={730} height={250} data={data}>
 					<CartesianGrid strokeDasharray="3 3" />
-					<XAxis dataKey="name" />
+					<XAxis dataKey={key1} />
 					<YAxis />
 					<Tooltip />
 					<Legend />
-					<Bar dataKey="pv" fill="#8884d8" />
-					<Bar dataKey="uv" fill="#82ca9d" />
+					<Bar dataKey={key2} fill="var(--color-primary)" />
 				</BarChart>
 			</ResponsiveContainer>
 		</div>

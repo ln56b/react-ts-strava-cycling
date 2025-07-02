@@ -1,71 +1,88 @@
+import { getMonthName } from '@/utils/utils';
 import { ActivityState } from './activitiesStore';
 import { createSelector } from 'reselect';
 
-const totalKm = (state: ActivityState) => {
+const totalKm = (state: ActivityState): number => {
 	return state.activities.reduce((acc, activity) => {
 		return acc + activity.distance / 1000; // from meters to km
 	}, 0);
 };
 
-const totalElevationInMeters = (state: ActivityState) => {
+const totalElevationInMeters = (state: ActivityState): number => {
 	return state.activities.reduce((acc, activity) => {
 		return acc + activity.total_elevation_gain;
 	}, 0);
 };
 
-const totalDurationInHours = (state: ActivityState) => {
+const totalDurationInHours = (state: ActivityState): number => {
 	return state.activities.reduce((acc, activity) => {
 		return acc + activity.moving_time / 3600; // from seconds to hours
 	}, 0);
 };
 
-const totalActivities = (state: ActivityState) => {
+const totalActivities = (state: ActivityState): number => {
 	return state.activities.length;
+};
+
+const totalActivitiesSplitByMonth = (
+	state: ActivityState
+): { month: string; count: number }[] => {
+	return state.activities.reduce((acc, activity) => {
+		const month = activity.start_date.split('-')[1];
+		const monthName = getMonthName(Number(month));
+		const existingMonth = acc.find((m) => m.month === monthName);
+		if (existingMonth) {
+			existingMonth.count++;
+		} else {
+			acc.push({ month: monthName, count: 1 });
+		}
+		return acc;
+	}, [] as { month: string; count: number }[]);
 };
 
 const averageKm = createSelector(
 	[totalKm, totalActivities],
-	(totalKm, totalActivities) => {
+	(totalKm, totalActivities): number => {
 		return totalKm / totalActivities;
 	}
 );
 
 const averageElevationInMeters = createSelector(
 	[totalElevationInMeters, totalActivities],
-	(totalElevationInMeters, totalActivities) => {
+	(totalElevationInMeters, totalActivities): number => {
 		return totalElevationInMeters / totalActivities;
 	}
 );
 
 const averageDurationInHours = createSelector(
 	[totalDurationInHours, totalActivities],
-	(totalDurationInHours, totalActivities) => {
+	(totalDurationInHours, totalActivities): number => {
 		return totalDurationInHours / totalActivities;
 	}
 );
 
 const averageSpeedKmPerHour = createSelector(
 	[totalKm, totalDurationInHours],
-	(totalKm, totalDurationInHours) => {
+	(totalKm, totalDurationInHours): number => {
 		return totalKm / totalDurationInHours;
 	}
 );
 
-const maxSpeedKmPerHour = (state: ActivityState) => {
+const maxSpeedKmPerHour = (state: ActivityState): number => {
 	const maxSpeed = state.activities.reduce((acc, activity) => {
 		return Math.max(acc, activity.max_speed);
 	}, 0);
 	return maxSpeed * 3.6;
 };
 
-const maxElevationInMeters = (state: ActivityState) => {
+const maxElevationInMeters = (state: ActivityState): number => {
 	const maxElevation = state.activities.reduce((acc, activity) => {
 		return Math.max(acc, activity.elev_high);
 	}, 0);
 	return maxElevation;
 };
 
-const maxDurationInHours = (state: ActivityState) => {
+const maxDurationInHours = (state: ActivityState): number => {
 	const maxDuration = state.activities.reduce((acc, activity) => {
 		return Math.max(acc, activity.moving_time / 3600); // from seconds to hours
 	}, 0);
@@ -74,25 +91,27 @@ const maxDurationInHours = (state: ActivityState) => {
 
 const activiesCountBetweenOneHundredAndTwoHundredKm = (
 	state: ActivityState
-) => {
+): number => {
 	return state.activities.filter(
 		(activity) => activity.distance > 100000 && activity.distance < 200000
 	).length;
 };
 
-const activiesCountWithMoreThanTwoHundredKm = (state: ActivityState) => {
+const activiesCountWithMoreThanTwoHundredKm = (
+	state: ActivityState
+): number => {
 	return state.activities.filter((activity) => activity.distance > 200000)
 		.length;
 };
 
-const activeDaysCount = (state: ActivityState) => {
+const activeDaysCount = (state: ActivityState): number => {
 	const uniqueDays = new Set(
 		state.activities.map((activity) => activity.start_date)
 	);
 	return uniqueDays.size;
 };
 
-const highestCountOfConsecutiveActiveDays = (state: ActivityState) => {
+const highestCountOfConsecutiveActiveDays = (state: ActivityState): number => {
 	const activitiesSortedByDate = state.activities.sort((a, b) => {
 		return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
 	});
@@ -115,7 +134,7 @@ const highestCountOfConsecutiveActiveDays = (state: ActivityState) => {
 	return consecutiveDays.length;
 };
 
-const sortedDistancesKm = (state: ActivityState) => {
+const sortedDistancesKm = (state: ActivityState): number[] => {
 	return state.activities
 		.map((activity) => activity.distance / 1000)
 		.sort((a, b) => b - a);
@@ -173,6 +192,7 @@ export const memoizedMetrics = createSelector(
 			totalElevationInMeters: totalElevationInMeters(state),
 			totalDurationInHours: totalDurationInHours(state),
 			totalActivities: totalActivities(state),
+			totalActivitiesSplitByMonth: totalActivitiesSplitByMonth(state),
 			averageKm: averageKm(state),
 			averageElevationInMeters: averageElevationInMeters(state),
 			averageDurationInHours: averageDurationInHours(state),

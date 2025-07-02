@@ -8,3 +8,21 @@ export function cn(...inputs: ClassValue[]) {
 export function formatLargeNumber(number: number) {
 	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
+export function getMonthName(month: number) {
+	const months = [
+		'Jan',
+		'Feb',
+		'Mar',
+		'Apr',
+		'May',
+		'Jun',
+		'Jul',
+		'Aug',
+		'Sep',
+		'Oct',
+		'Nov',
+		'Dec',
+	];
+	return months[month - 1];
+}

@@ -80,8 +80,18 @@ export default function Dashboard() {
 						</section>
 					) : (
 						<section className="col-span-12 lg:col-span-12 grid grid-cols-12 gap-4 justify-center items-center w-full h-full">
-							<LineChartCard title="Revenue Analytics" />
-							<BarChartCard title="Total Visits" />
+							<LineChartCard
+								title="Activities per month"
+								data={activityMetrics.totalActivitiesSplitByMonth}
+								key1="month"
+								key2="count"
+							/>
+							<BarChartCard
+								title="Activities per month"
+								data={activityMetrics.totalActivitiesSplitByMonth}
+								key1="month"
+								key2="count"
+							/>
 						</section>
 					)}
 				</main>
