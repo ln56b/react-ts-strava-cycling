@@ -1,4 +1,8 @@
 import {
+	activitiesInitialState,
+	useActivitiesStore,
+} from '@/stores/activitiesStore';
+import {
 	createContext,
 	ReactNode,
 	useCallback,
@@ -143,6 +147,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				localStorage.setItem('refreshToken', res.refresh_token);
 				setLoggedInToStrava(true);
 				toast.success('Successfully connected to Strava!');
+				useActivitiesStore.getState().fetchActivities();
 				return;
 			} else {
 				toast.error(res.message);
@@ -151,16 +156,25 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 		[apiUrl]
 	);
 
-	const logout = useCallback(() => {
+	const clearUserData = useCallback(() => {
+		// Local storage
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
 		localStorage.removeItem('tokenExpiresAt');
 		localStorage.removeItem('stravaCode');
+		// Zustand
+		useActivitiesStore.setState(activitiesInitialState);
+
+		// Context APi
 		setAccessToken(null);
 		setRefreshToken(null);
 		setLoggedInToStrava(false);
+	}, []);
+
+	const logout = useCallback(() => {
+		clearUserData();
 		navigate('/');
-	}, [navigate]);
+	}, [clearUserData, navigate]);
 
 	const contextValue = useMemo(
 		() => ({
