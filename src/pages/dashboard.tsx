@@ -5,12 +5,14 @@ import MetricCardSkeleton from '@/components/skeletons/metricCardSkeleton';
 import { useAuth } from '@/providers/authProvider';
 import { memoizedMetrics } from '@/stores/activitiesSelectors';
 import { useActivitiesStore } from '@/stores/activitiesStore';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import BarChartCard from '../components/layout/barChartCard';
+import { DatePicker } from '@/components/ui/datePicker';
+import { DateRange } from 'react-day-picker';
 
 export default function Dashboard() {
-	const { loginToStravaAction } = useAuth();
+	const { loginToStravaAction, loggedInToStrava } = useAuth();
 	const { loading } = useActivitiesStore();
 	const activityMetrics = useActivitiesStore(memoizedMetrics);
 
@@ -21,11 +23,22 @@ export default function Dashboard() {
 		if (code) loginToStravaAction(code);
 	}, [searchParams, loginToStravaAction]);
 
+	const handleDateChange = useCallback(
+		(dateRange: DateRange) => {
+			if (!loggedInToStrava) {
+				return;
+			}
+			useActivitiesStore.getState().fetchActivities(dateRange);
+		},
+		[loggedInToStrava]
+	);
+
 	return (
 		<>
 			<div className="flex justify-center items-center my-[100px] lg:px-2">
 				<main className="flex flex-col gap-10 justify-center items-center flex-wrap">
 					<h2 className="text-2xl font-bold">Dashboard</h2>
+					<DatePicker handleDateChange={handleDateChange} />
 					{loading ? (
 						<section className="col-span-12 grid grid-cols-12 gap-4">
 							<MetricCardSkeleton title="Total Distance" />

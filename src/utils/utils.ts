@@ -26,3 +26,7 @@ export function getMonthName(month: number) {
 	];
 	return months[month - 1];
 }
+
+export function toEpoch(date: Date): number {
+	return Math.floor(date.getTime() / 1000);
+}
