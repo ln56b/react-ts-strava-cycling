@@ -4,9 +4,10 @@ import { toast } from 'sonner';
 
 const apiUrl = 'http://localhost:3000/api';
 
-export const loadActivities = async (
-	params: Record<string, string>
-): Promise<Activity[] | undefined> => {
+export const loadActivities = async (params: {
+	after: number;
+	before: number;
+}): Promise<Activity[] | undefined> => {
 	const tokenValid = await checkStravaTokensValidity();
 
 	if (!tokenValid) {
@@ -20,8 +21,9 @@ export const loadActivities = async (
 	}
 
 	const queryParams = new URLSearchParams({
-		...params,
 		per_page: '100',
+		after: params.after.toString(),
+		before: params.before.toString(),
 	});
 
 	const url = `https://www.strava.com/api/v3/athlete/activities?${queryParams.toString()}`;

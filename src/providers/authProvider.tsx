@@ -147,7 +147,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				localStorage.setItem('refreshToken', res.refresh_token);
 				setLoggedInToStrava(true);
 				toast.success('Successfully connected to Strava!');
-				useActivitiesStore.getState().fetchActivities();
+
 				return;
 			} else {
 				toast.error(res.message);
