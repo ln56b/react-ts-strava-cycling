@@ -3,7 +3,7 @@ import { useActivitiesStore } from '@/stores/activitiesStore';
 import { environment } from '@/environments/environment';
 import { toast } from 'sonner';
 
-const apiUrl = 'http://localhost:3000/api';
+const apiUrl = environment.apiUrl;
 
 export const loadActivities = async (): Promise<Activity[] | undefined> => {
 	const tokenValid = await checkStravaTokensValidity();
