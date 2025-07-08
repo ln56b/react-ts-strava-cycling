@@ -1,13 +1,11 @@
 import { Activity } from '@/interfaces/strava';
 import { useActivitiesStore } from '@/stores/activitiesStore';
+import { environment } from '@/environments/environment';
 import { toast } from 'sonner';
 
 const apiUrl = 'http://localhost:3000/api';
 
-export const loadActivities = async (params: {
-	after: number;
-	before: number;
-}): Promise<Activity[] | undefined> => {
+export const loadActivities = async (): Promise<Activity[] | undefined> => {
 	const tokenValid = await checkStravaTokensValidity();
 
 	if (!tokenValid) {
@@ -20,25 +18,56 @@ export const loadActivities = async (params: {
 		return;
 	}
 
+	let page = 1;
+	const per_page = 10
+	const apiRequests = [];
+	const apiResponses = [];
+
 	const queryParams = new URLSearchParams({
-		per_page: '100',
-		after: params.after.toString(),
-		before: params.before.toString(),
+		page: page.toString(),
+		per_page: per_page.toString()
 	});
 
 	const url = `https://www.strava.com/api/v3/athlete/activities?${queryParams.toString()}`;
-	const response = await fetch(`${url}`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
 
-	const res = await response.json();
-	if (res) {
-		useActivitiesStore.setState({ activities: res });
-		return res;
+	try {
+		const firstResponse = await fetch(`${url}`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		});
+	
+		const firstRes = await firstResponse.json();
+		apiResponses.push(...firstRes);
+	
+		const nextPage = firstRes.length > per_page -1;
+	
+		if (nextPage) {
+			queryParams.set('page', page.toString());
+		}
+	
+		while (nextPage) {
+			page++;
+			console.log('fetching next page', page);
+			apiRequests.push(fetch(`${url}`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				},
+			}).then(res => res.json()).catch(err => {
+				toast.error(err.message);
+			}) )
+		}
+	
+		const restData = await Promise.all(apiRequests);
+		const res = [...apiResponses, ...restData];
+	
+		if (res) {
+			useActivitiesStore.setState({ activities: res });
+			return res;
+		}
+	} catch (err: any) {
+		toast.error(err.message);
 	}
-	toast.error(res.message);
 };
 
 const checkStravaTokensValidity = async () => {

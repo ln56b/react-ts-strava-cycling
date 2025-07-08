@@ -28,7 +28,8 @@ export default function Dashboard() {
 			if (!loggedInToStrava) {
 				return;
 			}
-			useActivitiesStore.getState().fetchActivities(dateRange);
+			// TODO: Implement with Store instead of api call
+			// useActivitiesStore.getState().fetchActivities(dateRange); 
 		},
 		[loggedInToStrava]
 	);

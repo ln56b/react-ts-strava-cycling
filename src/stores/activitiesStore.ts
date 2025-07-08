@@ -3,8 +3,6 @@ import { devtools } from 'zustand/middleware';
 
 import { Activity } from '@/interfaces/strava';
 import { loadActivities } from '@/services/strava.service';
-import { toEpoch } from '@/utils/utils';
-import { DateRange } from 'react-day-picker';
 
 export interface ActivityState {
 	activities: Activity[];
@@ -13,7 +11,7 @@ export interface ActivityState {
 }
 
 interface ActivitiesStore extends ActivityState {
-	fetchActivities: (selectedDateRange: DateRange) => Promise<void>;
+	fetchActivities: () => Promise<void>;
 }
 
 export const activitiesInitialState: ActivityState = {
@@ -26,11 +24,8 @@ const createActivitiesStore = (
 	set: (partial: Partial<ActivitiesStore>) => void
 ) => ({
 	...activitiesInitialState,
-	fetchActivities: async (selectedDateRange: DateRange) => {
-		const activities = await loadActivities({
-			after: toEpoch(selectedDateRange.from!),
-			before: toEpoch(selectedDateRange.to!),
-		});
+	fetchActivities: async () => {
+		const activities = await loadActivities();
 		set({ activities, loading: false });
 	},
 	setLoading: (loading: boolean) => set({ loading }),
