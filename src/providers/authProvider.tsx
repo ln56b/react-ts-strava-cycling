@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { environment } from '@/environments/environment';
 
 interface AuthState {
 	accessToken: string | null;
@@ -32,7 +33,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState | null>(null);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-	const apiUrl = 'http://localhost:3000/api';
+	const apiUrl = environment.apiUrl;
 
 	const [accessToken, setAccessToken] = useState<string | null>(
 		localStorage.getItem('accessToken')
@@ -76,7 +77,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				toast.error(res.message);
 			}
 		},
-		[navigate]
+		[navigate, apiUrl]
 	);
 
 	const loginAction = useCallback(
@@ -115,7 +116,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				toast.error(res.message);
 			}
 		},
-		[navigate]
+		[navigate, apiUrl]
 	);
 
 	const loginToStravaAction = useCallback(
