@@ -2,6 +2,12 @@ import { getMonthName } from '@/utils/utils';
 import { ActivityState } from './activitiesStore';
 import { createSelector } from 'reselect';
 
+export const athleteId = (state: ActivityState): number => {
+	return state.activities[0].athlete.id;
+};
+
+/* ACTIVITY METRICS */
+
 const totalKm = (state: ActivityState): number => {
 	return state.activities.reduce((acc, activity) => {
 		return acc + activity.distance / 1000; // from meters to km
