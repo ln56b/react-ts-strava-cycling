@@ -134,7 +134,7 @@ export default function Signup() {
 									onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 									onBlur={() => handleBlur('strava_id')}
 								/>
-								{touched.password && field.state.meta.errors
+								{touched.strava_id && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
 											<p
 												key={field.name}
@@ -162,7 +162,7 @@ export default function Signup() {
 									onChange={(e) => field.handleChange(e.target.value)}
 									onBlur={() => handleBlur('strava_secret')}
 								/>
-								{touched.password && field.state.meta.errors
+								{touched.strava_secret && field.state.meta.errors
 									? field.state.meta.errors.map((error) => (
 											<p
 												key={field.name}
