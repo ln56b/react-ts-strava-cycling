@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import { Activity } from '@/interfaces/strava';
+import { Activity, SportType } from '@/interfaces/strava';
 import { loadActivities } from '@/services/strava.service';
 
 export interface ActivityState {
@@ -25,8 +25,17 @@ const createActivitiesStore = (
 ) => ({
 	...activitiesInitialState,
 	fetchActivities: async () => {
-		const activities = await loadActivities();
-		set({ activities, loading: false });
+		const allActivities = await loadActivities();
+		const rideSports = [
+			SportType.Ride,
+			SportType.GravelRide,
+			SportType.VirtualRide,
+		];
+		const rides = allActivities?.filter((activity) =>
+			rideSports.includes(activity?.type as SportType)
+		);
+
+		set({ activities: rides, loading: false });
 	},
 	setLoading: (loading: boolean) => set({ loading }),
 	setError: (error: string | null) => set({ error }),

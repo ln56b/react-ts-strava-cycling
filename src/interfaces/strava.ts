@@ -3,6 +3,12 @@ interface Athlete {
 	resource_state: number;
 }
 
+export enum SportType {
+	GravelRide = 'GravelRide',
+	Ride = 'Ride',
+	VirtualRide = 'VirtualRide',
+}
+
 interface ActivityMap {
 	id: string;
 	summary_polyline?: string;
