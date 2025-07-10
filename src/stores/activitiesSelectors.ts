@@ -3,7 +3,7 @@ import { ActivityState } from './activitiesStore';
 import { createSelector } from 'reselect';
 
 export const athleteId = (state: ActivityState): number => {
-	return state.activities[0].athlete.id;
+	return state.activities[0]?.athlete?.id;
 };
 
 /* ACTIVITY METRICS */
