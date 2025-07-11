@@ -1,35 +1,42 @@
 import LineChartCard from '@/components/layout/lineChartCard';
 import MetricCard from '@/components/layout/metricCard';
+import Selector from '@/components/layout/selector';
 import ChartSkeleton from '@/components/skeletons/chartSkeleton';
 import MetricCardSkeleton from '@/components/skeletons/metricCardSkeleton';
-import { DatePicker } from '@/components/ui/datePicker';
 import { useAuth } from '@/providers/authProvider';
-import { memoizedMetrics, athleteId } from '@/stores/activitiesSelectors';
 import { useActivitiesStore } from '@/stores/activitiesStore';
-import { useCallback, useEffect } from 'react';
+import {
+	athleteId,
+	firstRideYear,
+	ridesMemoizedMetrics,
+} from '@/stores/rideSelectors';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import BarChartCard from '../components/layout/barChartCard';
+import { getCurrentYear, yearsFromStringDateUntilNow } from '@/utils/utils';
 
 export default function Dashboard() {
-	const { loginToStravaAction, loggedInToStrava } = useAuth();
+	const { loginToStravaAction } = useAuth();
 	const { loading } = useActivitiesStore();
 	const athlete = useActivitiesStore(athleteId);
-	const activityMetrics = useActivitiesStore(memoizedMetrics);
+	const ridesMetrics = useActivitiesStore(ridesMemoizedMetrics);
+	const firstYear = useActivitiesStore(firstRideYear);
 
 	const [searchParams] = useSearchParams();
+	const [selectedDate, setSelectedDate] = useState<string>('');
+	const [options, setOptions] = useState<string[]>([]);
 
 	useEffect(() => {
 		const code = searchParams.get('code');
 		if (code) loginToStravaAction(code);
 	}, [searchParams, loginToStravaAction]);
 
-	const handleDateChange = useCallback(() => {
-		if (!loggedInToStrava) {
-			return;
+	useEffect(() => {
+		if (firstYear) {
+			setSelectedDate(getCurrentYear());
+			setOptions(yearsFromStringDateUntilNow(firstYear));
 		}
-		// TODO: Implement with Store instead of api call
-		useActivitiesStore.getState().fetchActivities();
-	}, [loggedInToStrava]);
+	}, [firstYear]);
 
 	return (
 		<>
@@ -44,7 +51,14 @@ export default function Dashboard() {
 					>
 						View on Strava
 					</a>
-					<DatePicker handleDateChange={handleDateChange} />
+					{firstYear && (
+						<Selector
+							value={selectedDate}
+							onHandleChange={setSelectedDate}
+							dateType="calendarYear"
+							options={options}
+						/>
+					)}
 					{loading ? (
 						<section className="col-span-12 grid grid-cols-12 gap-4">
 							<MetricCardSkeleton title="Total Distance" />
@@ -56,38 +70,43 @@ export default function Dashboard() {
 						<section className="col-span-12 grid grid-cols-12 gap-4">
 							<MetricCard
 								title="Total Distance"
-								value={Number(activityMetrics.totalKm.toFixed())}
+								value={Number(ridesMetrics.totalKm.toFixed())}
+								unit="km"
+							/>
+							<MetricCard
+								title="Total Distance by Date"
+								value={Number(ridesMetrics.totalKmByDate.toFixed())}
 								unit="km"
 							/>
 							<MetricCard
 								title="Total Elevation"
-								value={Number(activityMetrics.totalElevationInMeters.toFixed())}
+								value={Number(ridesMetrics.totalElevationInMeters.toFixed())}
 								unit="m"
 							/>
 							<MetricCard
 								title="Total Duration"
-								value={Number(activityMetrics.totalDurationInHours.toFixed())}
+								value={Number(ridesMetrics.totalDurationInHours.toFixed())}
 								unit="h"
 							/>
 							<MetricCard
 								title="Total Activities"
-								value={activityMetrics.totalActivities}
+								value={ridesMetrics.totalActivities}
 							/>
 							<MetricCard
 								title="Eddington Number"
-								value={activityMetrics.eddingtonMetrics.eddington}
+								value={ridesMetrics.eddingtonMetrics.eddington}
 							/>
 							<MetricCard
 								title="Next Eddington Number"
-								value={activityMetrics.eddingtonMetrics.nextEddington}
+								value={ridesMetrics.eddingtonMetrics.nextEddington}
 							/>
 							<MetricCard
 								title="Activities Needed"
-								value={activityMetrics.eddingtonMetrics.activitiesNeeded}
+								value={ridesMetrics.eddingtonMetrics.activitiesNeeded}
 							/>
 							<MetricCard
 								title="Previous Eddington Number"
-								value={activityMetrics.eddingtonMetrics.previousEddington}
+								value={ridesMetrics.eddingtonMetrics.previousEddington}
 							/>
 						</section>
 					)}
@@ -101,13 +120,13 @@ export default function Dashboard() {
 						<section className="col-span-12 lg:col-span-12 grid grid-cols-12 gap-4 justify-center items-center w-full h-full">
 							<LineChartCard
 								title="Activities per month"
-								data={activityMetrics.totalActivitiesSplitByMonth}
+								data={ridesMetrics.totalActivitiesSplitByMonth}
 								key1="month"
 								key2="count"
 							/>
 							<BarChartCard
 								title="Activities per month"
-								data={activityMetrics.totalActivitiesSplitByMonth}
+								data={ridesMetrics.totalActivitiesSplitByMonth}
 								key1="month"
 								key2="count"
 							/>

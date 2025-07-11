@@ -1,48 +1,54 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import { Activity, SportType } from '@/interfaces/strava';
+import { Activity, rideSports, SportTypes } from '@/interfaces/strava';
 import { loadActivities } from '@/services/strava.service';
+import { lastFourWeeksDay } from '@/utils/utils';
+import { Filters } from '@/interfaces/project';
 
 export interface ActivityState {
-	activities: Activity[];
+	cyclingRides: Activity[];
+	filters: Filters;
 	loading: boolean;
 	error: string | null;
 }
 
-interface ActivitiesStore extends ActivityState {
-	fetchActivities: () => Promise<void>;
+interface ActivityActions {
+	fetchActivities: (year?: string) => Promise<void>;
+	setFilters: (filters: Filters) => void;
 }
 
 export const activitiesInitialState: ActivityState = {
-	activities: [],
+	cyclingRides: [],
+	filters: {
+		sport: 'cycling',
+		dates: {
+			from: lastFourWeeksDay(),
+			to: new Date().toISOString(),
+		},
+	},
 	loading: true,
 	error: null,
 };
 
 const createActivitiesStore = (
-	set: (partial: Partial<ActivitiesStore>) => void
+	set: (partial: Partial<ActivityState & ActivityActions>) => void
 ) => ({
 	...activitiesInitialState,
-	fetchActivities: async () => {
-		const allActivities = await loadActivities();
-		const rideSports = [
-			SportType.Ride,
-			SportType.GravelRide,
-			SportType.VirtualRide,
-		];
+	fetchActivities: async (year: string) => {
+		const allActivities = await loadActivities(year);
+
 		const rides = allActivities?.filter((activity) =>
-			rideSports.includes(activity?.type as SportType)
+			rideSports.includes(activity?.type as SportTypes)
 		);
 
-		set({ activities: rides, loading: false });
+		set({ cyclingRides: rides, loading: false });
 	},
+	setFilters: (filters: Filters) => set({ filters }),
 	setLoading: (loading: boolean) => set({ loading }),
 	setError: (error: string | null) => set({ error }),
 });
 
-export const useActivitiesStore = create<ActivitiesStore>()(
-	process.env.NODE_ENV === 'development'
-		? devtools((set) => createActivitiesStore(set), { name: 'ActivitiesStore' })
-		: (set) => createActivitiesStore(set)
+export const useActivitiesStore = create<ActivityState & ActivityActions>()(
+	devtools((set) => createActivitiesStore(set), { name: 'ActivitiesStore' })
 );

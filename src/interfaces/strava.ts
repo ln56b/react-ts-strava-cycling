@@ -3,11 +3,19 @@ interface Athlete {
 	resource_state: number;
 }
 
-export enum SportType {
+export enum SportTypes {
 	GravelRide = 'GravelRide',
 	Ride = 'Ride',
 	VirtualRide = 'VirtualRide',
+	Run = 'Run',
+	Hike = 'Hike',
 }
+
+export const rideSports = [
+	SportTypes.GravelRide,
+	SportTypes.Ride,
+	SportTypes.VirtualRide,
+];
 
 interface ActivityMap {
 	id: string;
