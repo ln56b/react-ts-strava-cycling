@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function formatLargeNumber(number: number) {
+export function formatLargeNumber(number: number): string {
 	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-export function getMonthName(month: number) {
+export function getMonthName(month: number): string {
 	const months = [
 		'Jan',
 		'Feb',
@@ -29,4 +29,36 @@ export function getMonthName(month: number) {
 
 export function toEpoch(date: Date): number {
 	return Math.floor(date.getTime() / 1000);
+}
+
+export function getCurrentYear(): string {
+	return new Date().getFullYear().toString();
+}
+
+export function lastFourWeeksDay(): string {
+	return new Date(Date.now() - 4 * 7 * 24 * 60 * 60 * 1000).toISOString();
+}
+
+export function firstDayOfYear(year: string): string {
+	return new Date(Number(year), 0, 1).toISOString();
+}
+
+export function lastDayOfYear(year: string): string {
+	return new Date(Number(year), 11, 31).toISOString();
+}
+
+export function oneYearAgoDay(): string {
+	return new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+}
+
+export function yearsFromStringDateUntilNow(date: string): string[] {
+	const years = [];
+	for (
+		let year = Number(date.split('-')[0]);
+		year <= new Date().getFullYear();
+		year++
+	) {
+		years.push(year.toString());
+	}
+	return years;
 }
