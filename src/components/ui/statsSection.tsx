@@ -1,15 +1,18 @@
+import { DateType } from '@/interfaces/project';
 import Selector from '../layout/selector';
 
 interface StatsSectionProps {
 	children: React.ReactNode;
+	dateType: DateType;
 	firstYear: string | undefined;
-	selectedDate: string;
 	setSelectedDate: (date: string) => void;
 	options: string[];
 	title: string;
+	selectedDate: string;
 }
 export default function StatsSection({
 	children,
+	dateType,
 	firstYear,
 	selectedDate,
 	setSelectedDate,
@@ -24,7 +27,7 @@ export default function StatsSection({
 					disabled={!firstYear}
 					value={selectedDate}
 					onHandleChange={setSelectedDate}
-					dateType="calendarYear"
+					dateType={dateType}
 					options={options}
 				/>
 			</div>

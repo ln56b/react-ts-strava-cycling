@@ -10,7 +10,7 @@ export const firstRideYear = (state: ActivityState): string | undefined => {
 	return state.cyclingRides?.[0]?.start_date?.split('-')[0] ?? undefined;
 };
 
-export const filteredByDateRides = createSelector(
+const filteredByDateRides = createSelector(
 	[
 		(state: ActivityState) => state.cyclingRides,
 		(state: ActivityState) => state.filters,
@@ -18,8 +18,8 @@ export const filteredByDateRides = createSelector(
 	(cyclingRides, filters) => {
 		return cyclingRides.filter(
 			(activity) =>
-				activity.start_date >= filters.dates.from &&
-				activity.start_date <= filters.dates.to
+				new Date(activity.start_date) >= new Date(filters.dates.from) &&
+				new Date(activity.start_date) <= new Date(filters.dates.to)
 		);
 	}
 );
@@ -47,11 +47,29 @@ const totalElevationInMeters = (state: ActivityState): number => {
 	}, 0);
 };
 
+const totalElevationInMetersByDate = createSelector(
+	[filteredByDateRides],
+	(filteredByDateRides) => {
+		return filteredByDateRides.reduce((acc, activity) => {
+			return acc + activity.total_elevation_gain;
+		}, 0);
+	}
+);
+
 const totalDurationInHours = (state: ActivityState): number => {
 	return state.cyclingRides.reduce((acc, activity) => {
 		return acc + activity.moving_time / 3600; // from seconds to hours
 	}, 0);
 };
+
+const totalDurationInHoursByDate = createSelector(
+	[filteredByDateRides],
+	(filteredByDateRides) => {
+		return filteredByDateRides.reduce((acc, activity) => {
+			return acc + activity.moving_time / 3600; // from seconds to hours
+		}, 0);
+	}
+);
 
 const totalActivities = (state: ActivityState): number => {
 	return state.cyclingRides.length;
@@ -80,6 +98,13 @@ const averageKm = createSelector(
 	}
 );
 
+const averageKmByDate = createSelector(
+	[totalKmByDate, totalActivities],
+	(totalKmByDate, totalActivities): number => {
+		return totalKmByDate / totalActivities;
+	}
+);
+
 const averageElevationInMeters = createSelector(
 	[totalElevationInMeters, totalActivities],
 	(totalElevationInMeters, totalActivities): number => {
@@ -91,6 +116,13 @@ const averageDurationInHours = createSelector(
 	[totalDurationInHours, totalActivities],
 	(totalDurationInHours, totalActivities): number => {
 		return totalDurationInHours / totalActivities;
+	}
+);
+
+const averageDurationInHoursByDate = createSelector(
+	[totalDurationInHoursByDate, totalActivities],
+	(totalDurationInHoursByDate, totalActivities): number => {
+		return totalDurationInHoursByDate / totalActivities;
 	}
 );
 
@@ -217,12 +249,11 @@ const eddingtonMetrics = (
 	};
 };
 
-export const ridesMemoizedMetrics = createSelector(
+export const rideAllTimesMetrics = createSelector(
 	(state: ActivityState) => state,
 	(state) => {
 		return {
 			totalKm: totalKm(state),
-			totalKmByDate: totalKmByDate(state),
 			totalElevationInMeters: totalElevationInMeters(state),
 			totalDurationInHours: totalDurationInHours(state),
 			totalActivities: totalActivities(state),
@@ -242,6 +273,20 @@ export const ridesMemoizedMetrics = createSelector(
 			highestCountOfConsecutiveActiveDays:
 				highestCountOfConsecutiveActiveDays(state),
 			eddingtonMetrics: eddingtonMetrics(state),
+		};
+	}
+);
+
+export const rideFilteredByDateMetrics = createSelector(
+	(state: ActivityState) => state,
+	(state) => {
+		return {
+			totalActivities: filteredByDateRides(state),
+			totalKm: totalKmByDate(state),
+			totalElevationInMeters: totalElevationInMetersByDate(state),
+			totalDurationInHours: totalDurationInHoursByDate(state),
+			averageKm: averageKmByDate(state),
+			averageDurationInHours: averageDurationInHoursByDate(state),
 		};
 	}
 );

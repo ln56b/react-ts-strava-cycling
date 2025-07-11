@@ -8,4 +8,8 @@ export type Filters = {
 	};
 };
 
-export type DateType = 'calendarYear' | 'pastYear' | 'pastFourWeeks';
+export type DateType =
+	| 'calendarYear'
+	| 'pastYear'
+	| 'pastFourWeeks'
+	| 'allTime';

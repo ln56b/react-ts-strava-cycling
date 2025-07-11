@@ -3,9 +3,14 @@ import { useEffect, useState } from 'react';
 import {
 	athleteId,
 	firstRideYear,
-	ridesMemoizedMetrics,
+	rideAllTimesMetrics,
+	rideFilteredByDateMetrics,
 } from '@/stores/rideSelectors';
-import { getCurrentYear, yearsFromStringDateUntilNow } from '@/utils/utils';
+import {
+	getCurrentYear,
+	lastFourWeeksDay,
+	yearsFromStringDateUntilNow,
+} from '@/utils/utils';
 import BarChartCard from '../components/layout/barChartCard';
 import LineChartCard from '../components/layout/lineChartCard';
 import MetricCard from '../components/layout/metricCard';
@@ -16,18 +21,18 @@ import PageContainer from '@/components/ui/pageContainer';
 
 export default function Rides() {
 	const { loading } = useActivitiesStore();
-	const ridesMetrics = useActivitiesStore(ridesMemoizedMetrics);
+	const allTimeMetrics = useActivitiesStore(rideAllTimesMetrics);
+	const filteredByDateMetrics = useActivitiesStore(rideFilteredByDateMetrics);
 	const userId = useActivitiesStore(athleteId);
-
+	const pastFourWeeksStringDate = lastFourWeeksDay();
 	const [selectedDate, setSelectedDate] = useState<string>('');
-	const [options, setOptions] = useState<string[]>([]);
+	const [dateOptions, setDateOptions] = useState<string[]>([]);
 	const firstYear = useActivitiesStore(firstRideYear);
 
 	useEffect(() => {
-		console.log(firstYear);
 		if (firstYear) {
 			setSelectedDate(getCurrentYear());
-			setOptions(yearsFromStringDateUntilNow(firstYear));
+			setDateOptions(yearsFromStringDateUntilNow(firstYear));
 		}
 	}, [firstYear]);
 
@@ -35,60 +40,44 @@ export default function Rides() {
 		<PageContainer title="Cycling rides" userId={userId}>
 			{/* Past four weeks metrics */}
 			<StatsSection
+				dateType="pastFourWeeks"
 				firstYear={firstYear}
-				selectedDate={selectedDate}
+				selectedDate={`from ${pastFourWeeksStringDate}`}
 				setSelectedDate={setSelectedDate}
-				options={options}
+				options={[`from ${pastFourWeeksStringDate}`]}
 				title="Past four weeks"
 			>
 				{loading ? (
 					<>
-						<MetricCardSkeleton title="Total Distance" />
-						<MetricCardSkeleton title="Total Elevation" />
-						<MetricCardSkeleton title="Total Duration" />
 						<MetricCardSkeleton title="Total Activities" />
+						<MetricCardSkeleton title="Average Distance" />
+						<MetricCardSkeleton title="Total Elevation" />
+						<MetricCardSkeleton title="Average Duration" />
 					</>
 				) : (
 					<>
 						<MetricCard
-							title="Total Distance"
-							value={Number(ridesMetrics.totalKm.toFixed())}
-							unit="km"
+							title="Total Activities"
+							value={filteredByDateMetrics.totalActivities.length}
 						/>
 						<MetricCard
-							title="Total Distance by Date"
-							value={Number(ridesMetrics.totalKmByDate.toFixed())}
+							title="Average Distance"
+							value={Number(filteredByDateMetrics.averageKm.toFixed())}
 							unit="km"
 						/>
 						<MetricCard
 							title="Total Elevation"
-							value={Number(ridesMetrics.totalElevationInMeters.toFixed())}
+							value={Number(
+								filteredByDateMetrics.totalElevationInMeters.toFixed()
+							)}
 							unit="m"
 						/>
 						<MetricCard
-							title="Total Duration"
-							value={Number(ridesMetrics.totalDurationInHours.toFixed())}
+							title="Average Duration"
+							value={Number(
+								filteredByDateMetrics.averageDurationInHours.toFixed()
+							)}
 							unit="h"
-						/>
-						<MetricCard
-							title="Total Activities"
-							value={ridesMetrics.totalActivities}
-						/>
-						<MetricCard
-							title="Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.eddington}
-						/>
-						<MetricCard
-							title="Next Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.nextEddington}
-						/>
-						<MetricCard
-							title="Activities Needed"
-							value={ridesMetrics.eddingtonMetrics.activitiesNeeded}
-						/>
-						<MetricCard
-							title="Previous Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.previousEddington}
 						/>
 					</>
 				)}
@@ -96,10 +85,11 @@ export default function Rides() {
 
 			{/* Yearly metrics */}
 			<StatsSection
+				dateType="calendarYear"
 				firstYear={firstYear}
 				selectedDate={selectedDate}
 				setSelectedDate={setSelectedDate}
-				options={options}
+				options={dateOptions}
 				title="Yearly metrics"
 			>
 				{loading ? (
@@ -113,43 +103,31 @@ export default function Rides() {
 					<>
 						<MetricCard
 							title="Total Distance"
-							value={Number(ridesMetrics.totalKm.toFixed())}
+							value={Number(filteredByDateMetrics.totalKm.toFixed())}
 							unit="km"
 						/>
 						<MetricCard
 							title="Total Distance by Date"
-							value={Number(ridesMetrics.totalKmByDate.toFixed())}
+							value={Number(filteredByDateMetrics.totalKm.toFixed())}
 							unit="km"
 						/>
 						<MetricCard
 							title="Total Elevation"
-							value={Number(ridesMetrics.totalElevationInMeters.toFixed())}
+							value={Number(
+								filteredByDateMetrics.totalElevationInMeters.toFixed()
+							)}
 							unit="m"
 						/>
 						<MetricCard
 							title="Total Duration"
-							value={Number(ridesMetrics.totalDurationInHours.toFixed())}
+							value={Number(
+								filteredByDateMetrics.totalDurationInHours.toFixed()
+							)}
 							unit="h"
 						/>
 						<MetricCard
 							title="Total Activities"
-							value={ridesMetrics.totalActivities}
-						/>
-						<MetricCard
-							title="Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.eddington}
-						/>
-						<MetricCard
-							title="Next Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.nextEddington}
-						/>
-						<MetricCard
-							title="Activities Needed"
-							value={ridesMetrics.eddingtonMetrics.activitiesNeeded}
-						/>
-						<MetricCard
-							title="Previous Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.previousEddington}
+							value={filteredByDateMetrics.totalActivities.length}
 						/>
 					</>
 				)}
@@ -157,10 +135,11 @@ export default function Rides() {
 
 			{/* All time metrics */}
 			<StatsSection
+				dateType="allTime"
 				firstYear={firstYear}
 				selectedDate={selectedDate}
 				setSelectedDate={setSelectedDate}
-				options={options}
+				options={dateOptions}
 				title="All time metrics"
 			>
 				{loading ? (
@@ -174,43 +153,43 @@ export default function Rides() {
 					<>
 						<MetricCard
 							title="Total Distance"
-							value={Number(ridesMetrics.totalKm.toFixed())}
+							value={Number(allTimeMetrics.totalKm.toFixed())}
 							unit="km"
 						/>
 						<MetricCard
 							title="Total Distance by Date"
-							value={Number(ridesMetrics.totalKmByDate.toFixed())}
+							value={Number(allTimeMetrics.totalKm.toFixed())}
 							unit="km"
 						/>
 						<MetricCard
 							title="Total Elevation"
-							value={Number(ridesMetrics.totalElevationInMeters.toFixed())}
+							value={Number(allTimeMetrics.totalElevationInMeters.toFixed())}
 							unit="m"
 						/>
 						<MetricCard
 							title="Total Duration"
-							value={Number(ridesMetrics.totalDurationInHours.toFixed())}
+							value={Number(allTimeMetrics.totalDurationInHours.toFixed())}
 							unit="h"
 						/>
 						<MetricCard
 							title="Total Activities"
-							value={ridesMetrics.totalActivities}
+							value={allTimeMetrics.totalActivities}
 						/>
 						<MetricCard
 							title="Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.eddington}
+							value={allTimeMetrics.eddingtonMetrics.eddington}
 						/>
 						<MetricCard
 							title="Next Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.nextEddington}
+							value={allTimeMetrics.eddingtonMetrics.nextEddington}
 						/>
 						<MetricCard
 							title="Activities Needed"
-							value={ridesMetrics.eddingtonMetrics.activitiesNeeded}
+							value={allTimeMetrics.eddingtonMetrics.activitiesNeeded}
 						/>
 						<MetricCard
 							title="Previous Eddington Number"
-							value={ridesMetrics.eddingtonMetrics.previousEddington}
+							value={allTimeMetrics.eddingtonMetrics.previousEddington}
 						/>
 					</>
 				)}
@@ -225,13 +204,13 @@ export default function Rides() {
 				<section className="grid grid-cols-12 col-span-12 gap-4 justify-center items-center w-full h-full lg:col-span-12">
 					<LineChartCard
 						title="Activities per month"
-						data={ridesMetrics.totalActivitiesSplitByMonth}
+						data={allTimeMetrics.totalActivitiesSplitByMonth}
 						key1="month"
 						key2="count"
 					/>
 					<BarChartCard
 						title="Activities per month"
-						data={ridesMetrics.totalActivitiesSplitByMonth}
+						data={allTimeMetrics.totalActivitiesSplitByMonth}
 						key1="month"
 						key2="count"
 					/>
