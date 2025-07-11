@@ -51,14 +51,14 @@ export default function Dashboard() {
 					>
 						View on Strava
 					</a>
-					{firstYear && (
-						<Selector
-							value={selectedDate}
-							onHandleChange={setSelectedDate}
-							dateType="calendarYear"
-							options={options}
-						/>
-					)}
+					<Selector
+						disabled={!firstYear}
+						value={selectedDate}
+						onHandleChange={setSelectedDate}
+						dateType="calendarYear"
+						options={options}
+					/>
+
 					{loading ? (
 						<section className="col-span-12 grid grid-cols-12 gap-4">
 							<MetricCardSkeleton title="Total Distance" />

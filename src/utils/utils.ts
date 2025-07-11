@@ -60,5 +60,5 @@ export function yearsFromStringDateUntilNow(date: string): string[] {
 	) {
 		years.push(year.toString());
 	}
-	return years;
+	return years.reverse();
 }

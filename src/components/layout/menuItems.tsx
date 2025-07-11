@@ -4,16 +4,35 @@ import { Link } from 'react-router';
 const MenuIcon = ({
 	icon,
 	theme,
+	className,
 }: {
 	icon: string;
 	theme: 'light' | 'dark';
+	className?: string;
 }) => {
 	return (
 		<i
-			className={`pr-2 fa-solid fa-${icon} ${
+			className={`fa-solid fa-${icon} ${className} ${
 				theme === 'light' ? 'text-primary' : ''
 			}`}
 		></i>
+	);
+};
+
+const MenuItemDiv = ({
+	theme,
+	title,
+	icon,
+}: {
+	theme: 'light' | 'dark';
+	title: string;
+	icon: string;
+}) => {
+	return (
+		<div className="grid grid-cols-12 gap-2 items-center">
+			<MenuIcon className="col-span-2" icon={icon} theme={theme} />
+			<span className="col-span-10">{title}</span>
+		</div>
 	);
 };
 
@@ -22,20 +41,16 @@ export default function MenuItems() {
 	return (
 		<>
 			<Link to="/dashboard">
-				<MenuIcon icon="house" theme={theme} />
-				<span>Dashboard</span>
+				<MenuItemDiv theme={theme} title="Dashboard" icon="house" />
 			</Link>
-			<Link to="/distance-records">
-				<MenuIcon icon="road" theme={theme} />
-				<span>Distance Records</span>
+			<Link to="/rides">
+				<MenuItemDiv theme={theme} title="Rides" icon="person-biking" />
 			</Link>
-			<Link to="/activity-summary">
-				<MenuIcon icon="calendar" theme={theme} />
-				<span>Activity summary</span>
+			<Link to="/hikes">
+				<MenuItemDiv theme={theme} title="Hikes" icon="person-hiking" />
 			</Link>
-			<Link to="/eddington-focus">
-				<MenuIcon icon="crosshairs" theme={theme} />
-				<span>Eddington focus</span>
+			<Link to="/runs">
+				<MenuItemDiv theme={theme} title="Runs" icon="person-running" />
 			</Link>
 		</>
 	);

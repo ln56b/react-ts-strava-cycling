@@ -20,6 +20,7 @@ interface SelectorProps {
 	options: string[];
 	value: string;
 	onHandleChange: (value: string) => void;
+	disabled?: boolean;
 }
 
 export default function Selector({
@@ -27,6 +28,7 @@ export default function Selector({
 	options,
 	value,
 	onHandleChange,
+	disabled,
 }: SelectorProps) {
 	const handleChange = (value: string) => {
 		let from = '';
@@ -60,7 +62,7 @@ export default function Selector({
 	};
 
 	return (
-		<Select value={value} onValueChange={handleChange}>
+		<Select value={value} onValueChange={handleChange} disabled={disabled}>
 			<SelectTrigger className="w-[180px]">
 				<SelectValue placeholder={`Select a ${dateType}`} />
 			</SelectTrigger>
