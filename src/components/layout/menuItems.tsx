@@ -39,7 +39,7 @@ const MenuItemDiv = ({
 export default function MenuItems() {
 	const { theme } = useTheme();
 	return (
-		<>
+		<div className="flex flex-col gap-4 p-2">
 			<Link to="/dashboard">
 				<MenuItemDiv theme={theme} title="Dashboard" icon="house" />
 			</Link>
@@ -52,6 +52,6 @@ export default function MenuItems() {
 			<Link to="/runs">
 				<MenuItemDiv theme={theme} title="Runs" icon="person-running" />
 			</Link>
-		</>
+		</div>
 	);
 }

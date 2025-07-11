@@ -1,3 +1,9 @@
+import PageContainer from '@/components/ui/pageContainer';
+
 export default function Runs() {
-	return <div>Runs</div>;
+	return (
+		<PageContainer title="Running" userId={0}>
+			<p>Runs component</p>
+		</PageContainer>
+	);
 }
