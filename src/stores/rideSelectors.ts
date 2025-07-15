@@ -1,6 +1,7 @@
 import { getMonthName } from '@/utils/utils';
 import { ActivityState } from './activitiesStore';
 import { createSelector } from 'reselect';
+import { DateSection } from '@/interfaces/project';
 
 export const athleteId = (state: ActivityState): number => {
 	return state.cyclingRides?.[0]?.athlete?.id ?? 0;
@@ -10,19 +11,20 @@ export const firstRideYear = (state: ActivityState): string | undefined => {
 	return state.cyclingRides?.[0]?.start_date?.split('-')[0] ?? undefined;
 };
 
-const filteredByDateRides = createSelector(
-	[
-		(state: ActivityState) => state.cyclingRides,
-		(state: ActivityState) => state.filters,
-	],
-	(cyclingRides, filters) => {
-		return cyclingRides.filter(
-			(activity) =>
-				new Date(activity.start_date) >= new Date(filters.dates.from) &&
-				new Date(activity.start_date) <= new Date(filters.dates.to)
-		);
-	}
-);
+const filteredByDateRides = (dateSection: DateSection) =>
+	createSelector(
+		[
+			(state: ActivityState) => state.cyclingRides,
+			(state: ActivityState) => state.filters[dateSection],
+		],
+		(cyclingRides, filters) => {
+			return cyclingRides.filter(
+				(activity) =>
+					new Date(activity.start_date) >= new Date(filters.dates.from) &&
+					new Date(activity.start_date) <= new Date(filters.dates.to)
+			);
+		}
+	);
 
 /* ACTIVITY METRICS */
 
@@ -32,14 +34,12 @@ const totalKm = (state: ActivityState): number => {
 	}, 0);
 };
 
-const totalKmByDate = createSelector(
-	[filteredByDateRides],
-	(filteredByDateRides) => {
+const totalKmByDate = (dateSection: DateSection) =>
+	createSelector([filteredByDateRides(dateSection)], (filteredByDateRides) => {
 		return filteredByDateRides.reduce((acc, activity) => {
 			return acc + activity.distance / 1000; // from meters to km
 		}, 0);
-	}
-);
+	});
 
 const totalElevationInMeters = (state: ActivityState): number => {
 	return state.cyclingRides.reduce((acc, activity) => {
@@ -47,14 +47,12 @@ const totalElevationInMeters = (state: ActivityState): number => {
 	}, 0);
 };
 
-const totalElevationInMetersByDate = createSelector(
-	[filteredByDateRides],
-	(filteredByDateRides) => {
+const totalElevationInMetersByDate = (dateSection: DateSection) =>
+	createSelector([filteredByDateRides(dateSection)], (filteredByDateRides) => {
 		return filteredByDateRides.reduce((acc, activity) => {
 			return acc + activity.total_elevation_gain;
 		}, 0);
-	}
-);
+	});
 
 const totalDurationInHours = (state: ActivityState): number => {
 	return state.cyclingRides.reduce((acc, activity) => {
@@ -62,14 +60,12 @@ const totalDurationInHours = (state: ActivityState): number => {
 	}, 0);
 };
 
-const totalDurationInHoursByDate = createSelector(
-	[filteredByDateRides],
-	(filteredByDateRides) => {
+const totalDurationInHoursByDate = (dateSection: DateSection) =>
+	createSelector([filteredByDateRides(dateSection)], (filteredByDateRides) => {
 		return filteredByDateRides.reduce((acc, activity) => {
 			return acc + activity.moving_time / 3600; // from seconds to hours
 		}, 0);
-	}
-);
+	});
 
 const totalActivities = (state: ActivityState): number => {
 	return state.cyclingRides.length;
@@ -91,6 +87,73 @@ const totalActivitiesSplitByMonth = (
 	}, [] as { month: string; count: number }[]);
 };
 
+const totalKmByDateSplitByMonth = (dateSection: DateSection) =>
+	createSelector(
+		[filteredByDateRides(dateSection)],
+		(filteredByDateRides): { month: string; km: number }[] => {
+			return filteredByDateRides.reduce((acc, activity) => {
+				const month = activity.start_date.split('-')[1];
+				const monthName = getMonthName(Number(month));
+				const existingMonth = acc.find((m) => m.month === monthName);
+				if (existingMonth) {
+					existingMonth.km += Number((activity.distance / 1000).toFixed(0));
+				} else {
+					acc.push({
+						month: monthName,
+						km: Number((activity.distance / 1000).toFixed(0)),
+					});
+				}
+				return acc;
+			}, [] as { month: string; km: number }[]);
+		}
+	);
+
+const totalDurationInHoursSplitByMonth = (dateSection: DateSection) =>
+	createSelector(
+		[filteredByDateRides(dateSection)],
+		(filteredByDateRides): { month: string; hours: number }[] => {
+			return filteredByDateRides.reduce((acc, activity) => {
+				const month = activity.start_date.split('-')[1];
+				const monthName = getMonthName(Number(month));
+				const existingMonth = acc.find((m) => m.month === monthName);
+				if (existingMonth) {
+					existingMonth.hours += Number(
+						(activity.moving_time / 3600).toFixed(0)
+					); // from seconds to hours
+				} else {
+					acc.push({
+						month: monthName,
+						hours: Number((activity.moving_time / 3600).toFixed(0)),
+					});
+				}
+				return acc;
+			}, [] as { month: string; hours: number }[]);
+		}
+	);
+
+const totalElevationInMetersSplitByMonth = (dateSection: DateSection) =>
+	createSelector(
+		[filteredByDateRides(dateSection)],
+		(filteredByDateRides): { month: string; meters: number }[] => {
+			return filteredByDateRides.reduce((acc, activity) => {
+				const month = activity.start_date.split('-')[1];
+				const monthName = getMonthName(Number(month));
+				const existingMonth = acc.find((m) => m.month === monthName);
+				if (existingMonth) {
+					existingMonth.meters += Number(
+						activity.total_elevation_gain.toFixed(0)
+					);
+				} else {
+					acc.push({
+						month: monthName,
+						meters: Number(activity.total_elevation_gain.toFixed(0)),
+					});
+				}
+				return acc;
+			}, [] as { month: string; meters: number }[]);
+		}
+	);
+
 const averageKm = createSelector(
 	[totalKm, totalActivities],
 	(totalKm, totalActivities): number => {
@@ -98,12 +161,13 @@ const averageKm = createSelector(
 	}
 );
 
-const averageKmByDate = createSelector(
-	[totalKmByDate, totalActivities],
-	(totalKmByDate, totalActivities): number => {
-		return totalKmByDate / totalActivities;
-	}
-);
+const averageKmByDate = (dateSection: DateSection) =>
+	createSelector(
+		[totalKmByDate(dateSection), totalActivities],
+		(totalKmByDate, totalActivities): number => {
+			return totalKmByDate / totalActivities;
+		}
+	);
 
 const averageElevationInMeters = createSelector(
 	[totalElevationInMeters, totalActivities],
@@ -119,12 +183,13 @@ const averageDurationInHours = createSelector(
 	}
 );
 
-const averageDurationInHoursByDate = createSelector(
-	[totalDurationInHoursByDate, totalActivities],
-	(totalDurationInHoursByDate, totalActivities): number => {
-		return totalDurationInHoursByDate / totalActivities;
-	}
-);
+const averageDurationInHoursByDate = (dateSection: DateSection) =>
+	createSelector(
+		[totalDurationInHoursByDate(dateSection), totalActivities],
+		(totalDurationInHoursByDate, totalActivities): number => {
+			return totalDurationInHoursByDate / totalActivities;
+		}
+	);
 
 const averageSpeedKmPerHour = createSelector(
 	[totalKm, totalDurationInHours],
@@ -277,16 +342,25 @@ export const rideAllTimesMetrics = createSelector(
 	}
 );
 
-export const rideFilteredByDateMetrics = createSelector(
-	(state: ActivityState) => state,
-	(state) => {
-		return {
-			totalActivities: filteredByDateRides(state),
-			totalKm: totalKmByDate(state),
-			totalElevationInMeters: totalElevationInMetersByDate(state),
-			totalDurationInHours: totalDurationInHoursByDate(state),
-			averageKm: averageKmByDate(state),
-			averageDurationInHours: averageDurationInHoursByDate(state),
-		};
-	}
-);
+export const rideFilteredByDateMetrics = (dateSection: DateSection) =>
+	createSelector(
+		(state: ActivityState) => state,
+		(state) => {
+			return {
+				totalActivities: filteredByDateRides(dateSection)(state),
+				totalKm: totalKmByDate(dateSection)(state),
+				totalElevationInMeters:
+					totalElevationInMetersByDate(dateSection)(state),
+				totalDurationInHours: totalDurationInHoursByDate(dateSection)(state),
+				averageKm: averageKmByDate(dateSection)(state),
+				averageDurationInHours:
+					averageDurationInHoursByDate(dateSection)(state),
+				totalKmByDateSplitByMonth:
+					totalKmByDateSplitByMonth(dateSection)(state),
+				totalDurationInHoursSplitByMonth:
+					totalDurationInHoursSplitByMonth(dateSection)(state),
+				totalElevationInMetersSplitByMonth:
+					totalElevationInMetersSplitByMonth(dateSection)(state),
+			};
+		}
+	);

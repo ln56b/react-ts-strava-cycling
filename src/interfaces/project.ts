@@ -1,15 +1,22 @@
 export type ActivityType = 'cycling' | 'running' | 'hiking';
 
 export type Filters = {
-	sport: ActivityType;
-	dates: {
-		from: string;
-		to: string;
+	[dateSection: string]: {
+		dates: {
+			from: string;
+			to: string;
+		};
 	};
 };
 
 export type DateType =
 	| 'calendarYear'
-	| 'pastYear'
+	| 'fullYear'
 	| 'pastFourWeeks'
 	| 'allTime';
+
+export enum DateSection {
+	CalendarYear = 'calendarYear',
+	FullYear = 'fullYear',
+	PastFourWeeks = 'pastFourWeeks',
+}

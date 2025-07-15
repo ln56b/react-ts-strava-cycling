@@ -3,11 +3,18 @@ import { devtools } from 'zustand/middleware';
 
 import { Activity, rideSports, SportTypes } from '@/interfaces/strava';
 import { loadActivities } from '@/services/strava.service';
-import { lastFourWeeksDay } from '@/utils/utils';
-import { Filters } from '@/interfaces/project';
+import {
+	firstDayOfYear,
+	getCurrentYear,
+	lastDayOfYear,
+	lastFourWeeksMonday,
+	sameDayInPreviousYear,
+} from '@/utils/utils';
+import { ActivityType, DateSection, Filters } from '@/interfaces/project';
 
 export interface ActivityState {
 	cyclingRides: Activity[];
+	selectedSport: ActivityType;
 	filters: Filters;
 	loading: boolean;
 	error: string | null;
@@ -20,11 +27,25 @@ interface ActivityActions {
 
 export const activitiesInitialState: ActivityState = {
 	cyclingRides: [],
+	selectedSport: 'cycling',
 	filters: {
-		sport: 'cycling',
-		dates: {
-			from: lastFourWeeksDay(),
-			to: new Date().toISOString(),
+		[DateSection.PastFourWeeks]: {
+			dates: {
+				from: lastFourWeeksMonday(),
+				to: new Date().toISOString(),
+			},
+		},
+		[DateSection.FullYear]: {
+			dates: {
+				from: sameDayInPreviousYear(getCurrentYear()),
+				to: new Date().toISOString(),
+			},
+		},
+		[DateSection.CalendarYear]: {
+			dates: {
+				from: firstDayOfYear(getCurrentYear()),
+				to: lastDayOfYear(getCurrentYear()),
+			},
 		},
 	},
 	loading: true,
