@@ -6,11 +6,7 @@ export default function LoginToStrava() {
 	const { theme } = useTheme();
 
 	const connectToStrava = () => {
-		const stravaId = localStorage.getItem('stravaId');
-		if (!stravaId) {
-			throw new Error('Strava ID not found');
-		}
-		authorizeStrava(Number(stravaId));
+		authorizeStrava();
 	};
 
 	return (

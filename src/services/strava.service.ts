@@ -18,7 +18,7 @@ export const loadActivities = async (
 	}
 
 	let page = 1;
-	const per_page = 100;
+	const per_page = 200;
 	const allActivities: Activity[] = [];
 
 	try {

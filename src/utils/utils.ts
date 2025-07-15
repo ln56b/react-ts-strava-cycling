@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatLargeNumber(number: number): string {
-	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
 export function getMonthName(month: number): string {
@@ -27,16 +27,18 @@ export function getMonthName(month: number): string {
 	return months[month - 1];
 }
 
-export function toEpoch(date: Date): number {
-	return Math.floor(date.getTime() / 1000);
-}
-
 export function getCurrentYear(): string {
 	return new Date().getFullYear().toString();
 }
 
-export function lastFourWeeksDay(): string {
-	return new Date(Date.now() - 4 * 7 * 24 * 60 * 60 * 1000).toISOString();
+export function lastFourWeeksMonday(): string {
+	const fourWeeksAgo = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000);
+	const dayOfWeek = fourWeeksAgo.getDay();
+	const daysToNextMonday = (7 - dayOfWeek) % 7; // Sunday at midnight
+
+	fourWeeksAgo.setDate(fourWeeksAgo.getDate() + daysToNextMonday);
+
+	return fourWeeksAgo.toISOString();
 }
 
 export function firstDayOfYear(year: string): string {
@@ -47,8 +49,23 @@ export function lastDayOfYear(year: string): string {
 	return new Date(Number(year), 11, 31).toISOString();
 }
 
-export function oneYearAgoDay(): string {
-	return new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+export function sameDayInPreviousYear(year: string): string {
+	const today = new Date();
+	const month = today.getMonth();
+	const day = today.getDate();
+
+	const previousYear = Number(year) - 1;
+	const previousYearDate = new Date(previousYear, month, day);
+	return previousYearDate.toISOString();
+}
+
+export function formatDateForSelector(date: string): string {
+	return new Date(date)
+		.toISOString()
+		.split('T')[0]
+		.split('-')
+		.reverse()
+		.join('-');
 }
 
 export function yearsFromStringDateUntilNow(date: string): string[] {
@@ -60,5 +77,11 @@ export function yearsFromStringDateUntilNow(date: string): string[] {
 	) {
 		years.push(year.toString());
 	}
-	return years;
+	return years.reverse();
+}
+
+export function ddMmYyyyToIsoString(dateStr: string): string {
+	const [day, month, year] = dateStr.split('-').map(Number);
+	const date = new Date(year, month - 1, day);
+	return date.toISOString();
 }

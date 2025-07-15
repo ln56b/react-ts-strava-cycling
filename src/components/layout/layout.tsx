@@ -28,16 +28,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					{children}
 				</main>
 			</div>
-			<div className="fixed right-4 bottom-4">
-				<img
-					width={100}
-					src={
-						theme === 'dark'
-							? 'src/assets/strava-white.svg'
-							: 'src/assets/strava-black.svg'
-					}
-					alt="powered by Strava"
-				></img>
+			<div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
+				<div className="items-end px-8 py-4">
+					<img
+						width={100}
+						src={
+							theme === 'dark'
+								? 'src/assets/strava-white.svg'
+								: 'src/assets/strava-black.svg'
+						}
+						alt="powered by Strava"
+					></img>
+				</div>
 			</div>
 		</div>
 	);

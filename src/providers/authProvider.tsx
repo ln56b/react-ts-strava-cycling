@@ -20,12 +20,7 @@ interface AuthState {
 	refreshToken: string | null;
 	loggedInToStrava: boolean;
 	loginAction: (email: string, password: string) => void;
-	signupAction: (
-		email: string,
-		password: string,
-		stravaId: number,
-		stravaSecret: string
-	) => void;
+	signupAction: (email: string, password: string) => void;
 	loginToStravaAction: (stravaCode: string) => void;
 	logout: () => void;
 }
@@ -44,12 +39,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const navigate = useNavigate();
 
 	const signupAction = useCallback(
-		async (
-			email: string,
-			password: string,
-			stravaId: number,
-			stravaSecret: string
-		) => {
+		async (email: string, password: string) => {
 			const response = await fetch(`${apiUrl}/auth/signup`, {
 				method: 'POST',
 				headers: {
@@ -58,8 +48,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 				body: JSON.stringify({
 					email,
 					password,
-					strava_id: stravaId,
-					strava_secret: stravaSecret,
 				}),
 			});
 
@@ -95,19 +83,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 			if (res.access_token) {
 				localStorage.setItem('accessToken', res.access_token);
 
-				const stravaIdResponse = await fetch(`${apiUrl}/users`, {
+				await fetch(`${apiUrl}/users`, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${res.access_token}`,
 					},
 				});
-
-				const stravaIdRes = await stravaIdResponse.json();
-
-				if (stravaIdRes) {
-					localStorage.setItem('stravaId', stravaIdRes.strava_id);
-				}
 
 				navigate('/login-to-strava');
 				toast.success('Welcome back!');

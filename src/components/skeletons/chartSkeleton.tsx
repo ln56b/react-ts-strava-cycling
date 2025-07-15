@@ -6,7 +6,7 @@ export default function ChartSkeleton({ title }: ChartSkeletonProps) {
 	return (
 		<div className="col-span-12 lg:col-span-6">
 			<h3 className="mb-4">{title}</h3>
-			<div className="relative w-full h-[400px] bg-gray-50 dark:bg-gray-800 rounded">
+			<div className="relative w-full h-[200px] bg-gray-50 dark:bg-gray-800 rounded">
 				{/* Y-axis (vertical line) */}
 				<div className="absolute left-5 top-4 bottom-5 w-px bg-gray-300 dark:bg-gray-600"></div>
 
