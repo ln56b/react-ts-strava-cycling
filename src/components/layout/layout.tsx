@@ -29,7 +29,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				</main>
 			</div>
 			<div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
-				<div className="items-end px-8 py-4">
+				<div className="flex justify-between items-center px-8 py-4 w-full">
+					<img
+						width={80}
+						src={
+							theme === 'dark'
+								? 'src/assets/mollets-cassoulet-full.svg'
+								: 'src/assets/mollets-cassoulet-full.svg'
+						}
+						alt="Incubated in Les Mollets Cassoulet"
+					></img>
+
 					<img
 						width={100}
 						src={

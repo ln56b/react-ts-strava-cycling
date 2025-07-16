@@ -43,71 +43,88 @@ export default function Signup() {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center my-[100px] mx-0">
-			<Link to="/">
-				<i className="mr-2 fa-solid fa-arrow-left"></i>
-				Back to login
-			</Link>
-			<Card className="mt-5">
-				<h2 className="mt-2 text-2xl text-center">Create an account</h2>
-				<fieldset>
-					<form.Field name="email">
-						{(field) => (
-							<>
-								<Input
-									id={field.name}
-									name={field.name}
-									value={field.state.value}
-									type="email"
-									placeholder="john.doe@email.com"
-									onChange={(e) => field.handleChange(e.target.value)}
-									onBlur={() => handleBlur('email')}
-								/>
-								{touched.email && field.state.meta.errors
-									? field.state.meta.errors.map((error) => (
-											<p
-												key={field.name}
-												className="p-2 italic text-destructive"
-											>
-												{error?.message}
-											</p>
-									  ))
-									: null}
-							</>
-						)}
-					</form.Field>
-				</fieldset>
+		<>
+			<div className="flex flex-col items-center justify-center my-[100px] mx-0">
+				<Link to="/">
+					<i className="mr-2 fa-solid fa-arrow-left"></i>
+					Back to login
+				</Link>
+				<Card className="mt-5">
+					<h2 className="mt-2 text-2xl text-center">Create an account</h2>
+					<fieldset>
+						<form.Field name="email">
+							{(field) => (
+								<>
+									<Input
+										id={field.name}
+										name={field.name}
+										value={field.state.value}
+										type="email"
+										placeholder="john.doe@email.com"
+										onChange={(e) => field.handleChange(e.target.value)}
+										onBlur={() => handleBlur('email')}
+									/>
+									{touched.email && field.state.meta.errors
+										? field.state.meta.errors.map((error) => (
+												<p
+													key={field.name}
+													className="p-2 italic text-destructive"
+												>
+													{error?.message}
+												</p>
+										  ))
+										: null}
+								</>
+							)}
+						</form.Field>
+					</fieldset>
 
-				<fieldset>
-					<form.Field name="password">
-						{(field) => (
-							<>
-								<Input
-									id={field.name}
-									name={field.name}
-									value={field.state.value}
-									type="text"
-									placeholder="Enter your password"
-									onChange={(e) => field.handleChange(e.target.value)}
-									onBlur={() => handleBlur('password')}
-								/>
-								{touched.password && field.state.meta.errors
-									? field.state.meta.errors.map((error) => (
-											<p
-												key={field.name}
-												className="p-2 italic text-destructive"
-											>
-												{error?.message}
-											</p>
-									  ))
-									: null}
-							</>
-						)}
-					</form.Field>
-				</fieldset>
+					<fieldset>
+						<form.Field name="password">
+							{(field) => (
+								<>
+									<Input
+										id={field.name}
+										name={field.name}
+										value={field.state.value}
+										type="text"
+										placeholder="Enter your password"
+										onChange={(e) => field.handleChange(e.target.value)}
+										onBlur={() => handleBlur('password')}
+									/>
+									{touched.password && field.state.meta.errors
+										? field.state.meta.errors.map((error) => (
+												<p
+													key={field.name}
+													className="p-2 italic text-destructive"
+												>
+													{error?.message}
+												</p>
+										  ))
+										: null}
+								</>
+							)}
+						</form.Field>
+					</fieldset>
 
-				<Button onClick={form.handleSubmit}>Submit</Button>
-			</Card>
-		</div>
+					<Button onClick={form.handleSubmit}>Submit</Button>
+				</Card>
+			</div>
+			<div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
+				<div className="flex justify-between items-center px-8 py-4 w-full">
+					<img
+						width={80}
+						src="src/assets/mollets-cassoulet-full.svg"
+						alt="Incubated in Les Mollets Cassoulet"
+					></img>
+
+					<img
+						width={100}
+						src="src/assets/strava-white.svg"
+						alt="powered by Strava"
+					></img>
+				</div>
+			</div>
+		</>
 	);
 }

@@ -106,22 +106,22 @@
 		--card-foreground: 220 15% 15%;
 		--popover: 0 0% 100%;
 		--popover-foreground: 220 15% 15%;
-		--primary: 190 100% 45%; /* Darker cyan for better contrast on light */
+		--primary: 25 85% 51%; /* Orange */
 		--primary-foreground: 0 0% 100%;
 		--secondary: 220 15% 96%; /* Very light gray */
 		--secondary-foreground: 220 15% 20%;
 		--muted: 220 15% 96%;
 		--muted-foreground: 220 15% 45%;
-		--accent: 190 100% 45%; /* Darker cyan accent */
+		--accent: 25 85% 51%; /* Orange accent */
 		--accent-foreground: 0 0% 100%;
 		--destructive: 0 84.2% 60%;
 		--destructive-foreground: 0 0% 98%;
 		--border: 220 15% 88%; /* Light gray borders */
 		--input: 220 15% 88%;
-		--ring: 190 100% 45%;
-		--chart-1: 190 100% 45%; /* Darker cyan */
-		--chart-2: 220 70% 50%; /* Blue */
-		--chart-3: 200 80% 55%; /* Light blue */
+		--ring: 25 85% 51%;
+		--chart-1: 25 85% 51%; /* Orange */
+		--chart-2: 25 85% 51%; /* Orange */
+		--chart-3: 25 85% 51%; /* Orange */
 		--chart-4: 180 60% 45%; /* Teal */
 		--chart-5: 210 75% 40%; /* Deep blue */
 		--radius: 1rem;
@@ -141,22 +141,22 @@
 		--card-foreground: 0 0% 98%;
 		--popover: 220 25% 12%;
 		--popover-foreground: 0 0% 98%;
-		--primary: 190 100% 70%; /* Slightly brighter cyan */
+		--primary: 25 85% 51%; /* Orange */
 		--primary-foreground: 220 20% 8%;
 		--secondary: 220 15% 15%;
 		--secondary-foreground: 0 0% 95%;
 		--muted: 220 15% 15%;
 		--muted-foreground: 0 0% 65%;
-		--accent: 190 100% 70%;
+		--accent: 25 85% 51%; /* Orange accent */
 		--accent-foreground: 220 20% 8%;
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 0 0% 98%;
 		--border: 220 15% 20%;
 		--input: 220 15% 20%;
-		--ring: 190 100% 70%;
-		--chart-1: 190 100% 70%;
-		--chart-2: 220 70% 55%;
-		--chart-3: 200 80% 60%;
+		--ring: 25 85% 51%;
+		--chart-1: 25 85% 51%; /* Orange */
+		--chart-2: 25 85% 51%; /* Orange */
+		--chart-3: 25 85% 51%; /* Orange */
 		--chart-4: 180 60% 50%;
 		--chart-5: 210 75% 45%;
 		--sidebar-background: 220 25% 6%;
