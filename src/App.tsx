@@ -11,6 +11,7 @@ import Rides from './pages/rides';
 import Runs from './pages/runs';
 import AuthProvider from './providers/authProvider';
 import ThemeProvider from './providers/themeProvider';
+import StravaRoute from './guards/stravaRoute';
 
 const queryClient = new QueryClient();
 
@@ -27,10 +28,12 @@ function App() {
 								<Route path="/signup" element={<Signup />} />
 								<Route element={<PrivateRoute />}>
 									<Route path="/login-to-strava" element={<LoginToStrava />} />
-									<Route path="/dashboard" element={<Dashboard />} />
-									<Route path="/rides" element={<Rides />} />
-									<Route path="/hikes" element={<Hikes />} />
-									<Route path="/runs" element={<Runs />} />
+									<Route element={<StravaRoute />}>
+										<Route path="/dashboard" element={<Dashboard />} />
+										<Route path="/rides" element={<Rides />} />
+										<Route path="/hikes" element={<Hikes />} />
+										<Route path="/runs" element={<Runs />} />
+									</Route>
 								</Route>
 							</Routes>
 						</ThemeProvider>

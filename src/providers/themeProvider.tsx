@@ -1,3 +1,5 @@
+import { Theme } from '@/interfaces/project';
+import { updateTheme } from '@/services/users.service';
 import {
 	createContext,
 	ReactNode,
@@ -9,29 +11,33 @@ import {
 } from 'react';
 
 interface ThemeState {
-	theme: 'light' | 'dark';
+	theme: Theme;
 	toggleTheme: () => void;
+	setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeState | null>(null);
 
 const ThemeProvider = ({ children }: { children: ReactNode }) => {
-	const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+	const [theme, setTheme] = useState<Theme>(Theme.Dark);
 
-	const toggleTheme = useCallback(() => {
-		setTheme(theme === 'light' ? 'dark' : 'light');
+	const toggleTheme = useCallback(async () => {
+		const newTheme = theme === Theme.Light ? Theme.Dark : Theme.Light;
+		await updateTheme(newTheme);
+		setTheme(newTheme);
 	}, [theme]);
 
 	const contextValue = useMemo(
 		() => ({
 			theme,
 			toggleTheme,
+			setTheme,
 		}),
 		[theme, toggleTheme]
 	);
 
 	useEffect(() => {
-		document.documentElement.classList.toggle('dark', theme === 'dark');
+		document.documentElement.classList.toggle('dark', theme === Theme.Dark);
 	}, [theme]);
 
 	return <ThemeContext value={contextValue}>{children}</ThemeContext>;

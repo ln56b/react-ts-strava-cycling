@@ -1,3 +1,5 @@
+import { Theme } from '@/interfaces/project';
+import { useAuth } from '@/providers/authProvider';
 import { useTheme } from '@/providers/themeProvider';
 import { Link } from 'react-router';
 
@@ -7,13 +9,13 @@ const MenuIcon = ({
 	className,
 }: {
 	icon: string;
-	theme: 'light' | 'dark';
+	theme: Theme;
 	className?: string;
 }) => {
 	return (
 		<i
 			className={`fa-solid fa-${icon} ${className} ${
-				theme === 'light' ? 'text-primary' : ''
+				theme === Theme.Light ? 'text-primary' : ''
 			}`}
 		></i>
 	);
@@ -24,7 +26,7 @@ const MenuItemDiv = ({
 	title,
 	icon,
 }: {
-	theme: 'light' | 'dark';
+	theme: Theme;
 	title: string;
 	icon: string;
 }) => {
@@ -38,18 +40,32 @@ const MenuItemDiv = ({
 
 export default function MenuItems() {
 	const { theme } = useTheme();
+	const { loggedInToStrava } = useAuth();
 	return (
 		<div className="flex flex-col gap-4 p-2">
-			<Link to="/dashboard">
+			<Link
+				to="/dashboard"
+				relative="path"
+				className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}
+			>
 				<MenuItemDiv theme={theme} title="Dashboard" icon="house" />
 			</Link>
-			<Link to="/rides">
+			<Link
+				to="/rides"
+				className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}
+			>
 				<MenuItemDiv theme={theme} title="Rides" icon="person-biking" />
 			</Link>
-			<Link to="/hikes">
+			<Link
+				to="/hikes"
+				className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}
+			>
 				<MenuItemDiv theme={theme} title="Hikes" icon="person-hiking" />
 			</Link>
-			<Link to="/runs">
+			<Link
+				to="/runs"
+				className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}
+			>
 				<MenuItemDiv theme={theme} title="Runs" icon="person-running" />
 			</Link>
 		</div>
