@@ -2,14 +2,13 @@ import { Activity } from '@/interfaces/strava';
 import { useActivitiesStore } from '@/stores/activitiesStore';
 import { environment } from '@/environments/environment';
 import { toast } from 'sonner';
-
-const apiUrl = environment.apiUrl;
+import * as userService from './users.service';
 
 export const loadActivities = async (
 	year: string
 ): Promise<Activity[] | undefined> => {
 	const tokenValid = await checkStravaTokensValidity();
-	if (!tokenValid) await refreshStravaTokens();
+	if (!tokenValid) await userService.refreshStravaTokens();
 
 	const accessToken = localStorage.getItem('accessToken');
 	if (!accessToken) {
@@ -57,6 +56,14 @@ export const loadActivities = async (
 	}
 };
 
+export const authorizeStrava = async () => {
+	if (!environment.strava.clientId) {
+		throw new Error('Strava client ID not found');
+	}
+
+	window.location.href = `https://www.strava.com/oauth/authorize?client_id=${environment.strava.clientId}&redirect_uri=${environment.uri}/dashboard&response_type=code&scope=read_all,activity:read_all,activity:write`;
+};
+
 const checkStravaTokensValidity = async () => {
 	const tokenExpiresAt = localStorage.getItem('tokenExpiresAt');
 
@@ -67,40 +74,4 @@ const checkStravaTokensValidity = async () => {
 		return false;
 	}
 	return true;
-};
-
-const refreshStravaTokens = async () => {
-	const accessToken = localStorage.getItem('accessToken');
-	if (!accessToken) {
-		toast.error('You are not identified');
-		return;
-	}
-	const refreshToken = localStorage.getItem('refreshToken');
-	if (!refreshToken) {
-		toast.error('You are not identified');
-		return;
-	}
-
-	try {
-		const response = await fetch(`${apiUrl}/users/strava-refresh-tokens`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${accessToken}`,
-			},
-			body: JSON.stringify({ refreshToken }),
-		});
-
-		const res = await response.json();
-		if (res) {
-			const { access_token, refresh_token, expires_at } = res;
-			localStorage.setItem('accessToken', access_token);
-			localStorage.setItem('refreshToken', refresh_token);
-			localStorage.setItem('tokenExpiresAt', expires_at);
-			return res;
-		}
-		throw new Error(res.message);
-	} catch (err) {
-		console.log('Error', err);
-	}
 };
