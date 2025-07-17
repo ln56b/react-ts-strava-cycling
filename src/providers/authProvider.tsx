@@ -1,7 +1,6 @@
 import { Theme } from '@/interfaces/project';
 import { login, signup } from '@/services/auth.service';
 import {
-	getUser,
 	postStravaToken,
 	updateLastLogin,
 } from '@/services/users.service';
@@ -48,6 +47,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 			const res = await response;
 			setAccessToken(res.access_token);
 			localStorage.setItem('accessToken', res.access_token);
+			localStorage.setItem('loggedInToStrava', 'false');
 
 			navigate('/login-to-strava');
 			toast.success('Welcome to the app!');
@@ -63,7 +63,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 			const res = await loginResponse;
 
 			localStorage.setItem('accessToken', res.access_token);
-
+			localStorage.setItem('loggedInToStrava', 'false');
 
 			useUserStore.getState().setTheme(res.theme as Theme);
 

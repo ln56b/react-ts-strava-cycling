@@ -1,8 +1,15 @@
 import StravaContainer from '@/components/layout/stravaContainer';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const StravaRoute = () => {
-	// TODO: check if user is logged in to Strava
+	const loggedInToStrava = localStorage.getItem('loggedInToStrava');
+
+	
+
+	if (!loggedInToStrava) {
+		return <Navigate to="/login-to-strava" />;
+	}
+
 	return (
 		<StravaContainer>
 			<Outlet />
