@@ -23,6 +23,10 @@ export const userInitialState: UserState = {
 const createUserStore = (
 	set: (partial: Partial<UserState & UserActions>) => void
 ) => ({
+	theme: Theme.Dark,
+	lastLogin: '',
+	loading: false,
+	error: null,
 	setTheme: (theme: Theme) => set({ theme }),
 });
 

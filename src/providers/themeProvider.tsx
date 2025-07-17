@@ -13,7 +13,7 @@ import {
 interface ThemeState {
 	theme: Theme;
 	toggleTheme: () => void;
-	setTheme: (theme: Theme) => void;
+	getUserTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeState | null>(null);
@@ -25,15 +25,24 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
 		const newTheme = theme === Theme.Light ? Theme.Dark : Theme.Light;
 		await updateTheme(newTheme);
 		setTheme(newTheme);
+		localStorage.setItem('theme', newTheme as Theme);
 	}, [theme]);
+
+	const getUserTheme = useCallback(async () => {
+		const userTheme = localStorage.getItem('theme');
+		if (userTheme) {
+			setTheme(userTheme as Theme);
+			localStorage.setItem('theme', userTheme as Theme);
+		}
+	}, [setTheme]);
 
 	const contextValue = useMemo(
 		() => ({
 			theme,
 			toggleTheme,
-			setTheme,
+			getUserTheme,
 		}),
-		[theme, toggleTheme]
+		[theme, toggleTheme, getUserTheme]
 	);
 
 	useEffect(() => {

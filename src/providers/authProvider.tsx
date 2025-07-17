@@ -1,4 +1,3 @@
-import { Theme } from '@/interfaces/project';
 import { login, signup } from '@/services/auth.service';
 import {
 	postStravaToken,
@@ -61,11 +60,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 			const loginResponse = await login(email, password);
 
 			const res = await loginResponse;
-
+			localStorage.setItem('theme', res.theme);
 			localStorage.setItem('accessToken', res.access_token);
 			localStorage.setItem('loggedInToStrava', 'false');
 
-			useUserStore.getState().setTheme(res.theme as Theme);
 
 			navigate('/login-to-strava');
 			toast.success('Welcome back!');
@@ -113,6 +111,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 		localStorage.removeItem('tokenExpiresAt');
 		localStorage.removeItem('stravaCode');
 		localStorage.removeItem('loggedInToStrava');
+		localStorage.removeItem('theme');
 		// Zustand
 		useActivitiesStore.setState(activitiesInitialState);
 		useUserStore.setState(userInitialState);
