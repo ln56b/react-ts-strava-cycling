@@ -64,7 +64,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 			localStorage.setItem('accessToken', res.access_token);
 
-			await getUser();
 
 			useUserStore.getState().setTheme(res.theme as Theme);
 

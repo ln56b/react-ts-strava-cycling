@@ -9,12 +9,6 @@ const headers = {
 	Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
 };
 
-export const getUser = async () => {
-	await fetch(`${environment.apiUrl}/users`, {
-		method: 'GET',
-		headers,
-	});
-};
 
 export const updateTheme = async (theme: Theme): Promise<Theme> => {
 	const response = await fetch(`${apiUrl}/users/theme`, {
