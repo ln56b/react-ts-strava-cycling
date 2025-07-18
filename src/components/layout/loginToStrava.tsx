@@ -1,6 +1,7 @@
-import { authorizeStrava } from '@/services/users.service';
 import { Button } from '../ui/button';
 import { useTheme } from '@/providers/themeProvider';
+import { Theme } from '@/interfaces/project';
+import { authorizeStrava } from '@/services/strava.service';
 
 export default function LoginToStrava() {
 	const { theme } = useTheme();
@@ -15,7 +16,7 @@ export default function LoginToStrava() {
 				<img
 					className="w-60"
 					src={
-						theme === 'dark'
+						theme === Theme.Dark
 							? 'src/assets/btn-strava-connect-white.png'
 							: 'src/assets/btn-strava-connect-orange.png'
 					}
