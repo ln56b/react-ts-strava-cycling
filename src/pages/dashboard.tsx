@@ -18,7 +18,7 @@ export default function Dashboard() {
 
 	return (
 		<div className="flex justify-center items-center my-[100px] lg:px-2">
-			<PageContainer title="Dashboard" userId={0} loading={loading}>
+			<PageContainer title="Dashboard" athleteId={0} loading={loading}>
 				<StatsSection>
 					<p>Hikes component</p>
 				</StatsSection>

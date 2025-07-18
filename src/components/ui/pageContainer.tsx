@@ -1,12 +1,12 @@
 export default function PageContainer({
 	children,
 	title,
-	userId,
+	athleteId,
 	loading,
 }: {
 	children: React.ReactNode;
 	title: string;
-	userId: number;
+	athleteId: number;
 	loading: boolean;
 }) {
 	return (
@@ -20,7 +20,7 @@ export default function PageContainer({
 						</p>
 					) : (
 						<a
-							href={`https://www.strava.com/athletes/${userId}`}
+							href={`https://www.strava.com/athletes/${athleteId}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className=" text-[#FC5200]"

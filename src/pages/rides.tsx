@@ -34,7 +34,7 @@ export default function Rides() {
 	const calendarYearMetrics = useActivitiesStore(
 		rideFilteredByDateMetrics(DateSection.CalendarYear)
 	);
-	const userId = useActivitiesStore(athleteId);
+	const athlete = useActivitiesStore(athleteId);
 	const [calendarYearOptions, setCalendarYearOptions] = useState<string[]>([]);
 	const [fullYearOptions, setFullYearOptions] = useState<string[]>([]);
 	const firstYear = useActivitiesStore(firstRideYear);
@@ -62,7 +62,7 @@ export default function Rides() {
 	}, [firstYear]);
 
 	return (
-		<PageContainer title="Cycling rides" userId={userId} loading={loading}>
+		<PageContainer title="Cycling rides" athleteId={athlete} loading={loading}>
 			{/* Past four weeks metrics */}
 			<PageSection title="Past four weeks">
 				<StatsSection>

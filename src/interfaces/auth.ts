@@ -1,5 +1,5 @@
 export interface User {
-	id?: string;
+	uuid?: string;
 	email: string;
 	password: string;
 	strava_code?: string;
