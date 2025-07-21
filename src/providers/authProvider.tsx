@@ -1,21 +1,10 @@
-import { login, signup } from "@/services/auth.service";
-import { postStravaToken, updateLastLogin } from "@/services/users.service";
-import {
-  activitiesInitialState,
-  useActivitiesStore,
-} from "@/stores/activitiesStore";
-import { userInitialState, useUserStore } from "@/stores/userStore";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { login, signup } from '@/services/auth.service';
+import { postStravaToken } from '@/services/users.service';
+import { activitiesInitialState, useActivitiesStore } from '@/stores/activitiesStore';
+import { userInitialState, useUserStore } from '@/stores/userStore';
+import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface AuthState {
   accessToken: string | null;
@@ -42,14 +31,14 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const res = await response;
       setAccessToken(res.access_token);
-      localStorage.setItem("accessToken", res.access_token);
-      localStorage.setItem("loggedInToStrava", "false");
+      localStorage.setItem('accessToken', res.access_token);
+      localStorage.setItem('loggedInToStrava', 'false');
 
-      navigate("/login-to-strava");
-      toast.success("Welcome to the app!");
+      navigate('/login-to-strava');
+      toast.success('Welcome to the app!');
       return;
     },
-    [navigate]
+    [navigate],
   );
 
   const loginAction = useCallback(
@@ -57,24 +46,24 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       const loginResponse = await login(email, password);
 
       const res = await loginResponse;
-      localStorage.setItem("theme", res.theme);
-      localStorage.setItem("accessToken", res.access_token);
-      localStorage.setItem("loggedInToStrava", "false");
+      localStorage.setItem('theme', res.theme);
+      localStorage.setItem('accessToken', res.access_token);
+      localStorage.setItem('loggedInToStrava', 'false');
 
-      navigate("/login-to-strava");
-      toast.success("Welcome back!");
+      navigate('/login-to-strava');
+      toast.success('Welcome back!');
       return;
     },
-    [navigate]
+    [navigate],
   );
 
   const loginToStravaAction = useCallback(async (code: string) => {
     if (!code) return;
     if (isLoggingToStravaRef.current) return;
 
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
-      toast.error("You are not identified");
+      toast.error('You are not identified');
     }
     isLoggingToStravaRef.current = true;
     const response = await postStravaToken(code);
@@ -85,13 +74,12 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoggedInToStrava(true);
       setAccessToken(res.access_token);
       setRefreshToken(res.refresh_token);
-      localStorage.setItem("loggedInToStrava", "true");
-      localStorage.setItem("tokenExpiresAt", res.expires_at);
-      localStorage.setItem("stravaCode", code);
-      localStorage.setItem("accessToken", res.access_token);
-      localStorage.setItem("refreshToken", res.refresh_token);
-      toast.success("Successfully connected to Strava!");
-      updateLastLogin();
+      localStorage.setItem('loggedInToStrava', 'true');
+      localStorage.setItem('tokenExpiresAt', res.expires_at);
+      localStorage.setItem('stravaCode', code);
+      localStorage.setItem('accessToken', res.access_token);
+      localStorage.setItem('refreshToken', res.refresh_token);
+      toast.success('Successfully connected to Strava!');
       // One single initial fetch of all activities
       useActivitiesStore.getState().fetchActivities();
       return;
@@ -102,12 +90,12 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const clearUserData = useCallback(() => {
     // Local storage
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("tokenExpiresAt");
-    localStorage.removeItem("stravaCode");
-    localStorage.removeItem("loggedInToStrava");
-    localStorage.removeItem("theme");
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('tokenExpiresAt');
+    localStorage.removeItem('stravaCode');
+    localStorage.removeItem('loggedInToStrava');
+    localStorage.removeItem('theme');
     // Zustand
     useActivitiesStore.setState(activitiesInitialState);
     useUserStore.setState(userInitialState);
@@ -120,7 +108,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = useCallback(() => {
     clearUserData();
-    navigate("/");
+    navigate('/');
   }, [clearUserData, navigate]);
 
   const contextValue = useMemo(
@@ -133,15 +121,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       loginToStravaAction,
       logout,
     }),
-    [
-      accessToken,
-      refreshToken,
-      loggedInToStrava,
-      signupAction,
-      loginAction,
-      loginToStravaAction,
-      logout,
-    ]
+    [accessToken, refreshToken, loggedInToStrava, signupAction, loginAction, loginToStravaAction, logout],
   );
 
   return <AuthContext value={contextValue}>{children}</AuthContext>;
@@ -153,7 +133,7 @@ export default AuthProvider;
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
