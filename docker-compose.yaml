@@ -1,8 +1,9 @@
 services:
   frontend:
-    container_name: react-strava-cycling
+    container_name: frontend-dev
     build:
       context: .
+      target: development
       args:
         - BUILD_ENV=development
     environment:
