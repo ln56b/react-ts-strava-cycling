@@ -33,8 +33,8 @@ interface StravaActivity {
   display_hide_heartrate_option: boolean;
   distance: number; // in meters
   elapsed_time: number; // in seconds
-  elev_high: number; // in meters
-  elev_low: number; // in meters
+  elev_high?: number; // in meters
+  elev_low?: number; // in meters
   end_latlng: [number, number];
   external_id: string;
   flagged: boolean;
