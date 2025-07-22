@@ -6,125 +6,113 @@ import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useAuth } from '@/providers/authProvider';
 import { Link } from 'react-router';
+import molletsCassoulet from '@/assets/mollets-cassoulet-full.svg';
+import stravaWhite from '@/assets/strava-white.svg';
 
 const signupSchema = z.object({
-	email: z.string().email().min(2, {
-		message: 'Email should be at least 2 characters',
-	}),
-	password: z.string().min(3, {
-		message: 'Password should be at least 3 characters',
-	}),
+  email: z.string().email().min(2, {
+    message: 'Email should be at least 2 characters',
+  }),
+  password: z.string().min(3, {
+    message: 'Password should be at least 3 characters',
+  }),
 });
 
 export default function Signup() {
-	const auth = useAuth();
+  const auth = useAuth();
 
-	const form = useForm({
-		defaultValues: {
-			email: '',
-			password: '',
-		},
-		onSubmit: async ({ value }) => {
-			auth.signupAction(value.email, value.password);
-			form.reset();
-		},
-		validators: {
-			onChange: signupSchema,
-		},
-	});
+  const form = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async ({ value }) => {
+      auth.signupAction(value.email, value.password);
+      form.reset();
+    },
+    validators: {
+      onChange: signupSchema,
+    },
+  });
 
-	const [touched, setTouched] = useState({
-		email: false,
-		password: false,
-	});
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
 
-	const handleBlur = (fieldName: string) => {
-		setTouched((prev) => ({ ...prev, [fieldName]: true }));
-	};
+  const handleBlur = (fieldName: string) => {
+    setTouched(prev => ({ ...prev, [fieldName]: true }));
+  };
 
-	return (
-		<>
-			<div className="flex flex-col items-center justify-center my-[100px] mx-0">
-				<Link to="/">
-					<i className="mr-2 fa-solid fa-arrow-left"></i>
-					Back to login
-				</Link>
-				<Card className="mt-5">
-					<h2 className="mt-2 text-2xl text-center">Create an account</h2>
-					<fieldset>
-						<form.Field name="email">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										type="email"
-										placeholder="john.doe@email.com"
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={() => handleBlur('email')}
-									/>
-									{touched.email && field.state.meta.errors
-										? field.state.meta.errors.map((error) => (
-												<p
-													key={field.name}
-													className="p-2 italic text-destructive"
-												>
-													{error?.message}
-												</p>
-										  ))
-										: null}
-								</>
-							)}
-						</form.Field>
-					</fieldset>
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center my-[100px] mx-0">
+        <Link to="/">
+          <i className="mr-2 fa-solid fa-arrow-left"></i>
+          Back to login
+        </Link>
+        <Card className="mt-5">
+          <h2 className="mt-2 text-2xl text-center">Create an account</h2>
+          <fieldset>
+            <form.Field name="email">
+              {field => (
+                <>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    type="email"
+                    placeholder="john.doe@email.com"
+                    onChange={e => field.handleChange(e.target.value)}
+                    onBlur={() => handleBlur('email')}
+                  />
+                  {touched.email && field.state.meta.errors
+                    ? field.state.meta.errors.map(error => (
+                        <p key={field.name} className="p-2 italic text-destructive">
+                          {error?.message}
+                        </p>
+                      ))
+                    : null}
+                </>
+              )}
+            </form.Field>
+          </fieldset>
 
-					<fieldset>
-						<form.Field name="password">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										type="text"
-										placeholder="Enter your password"
-										onChange={(e) => field.handleChange(e.target.value)}
-										onBlur={() => handleBlur('password')}
-									/>
-									{touched.password && field.state.meta.errors
-										? field.state.meta.errors.map((error) => (
-												<p
-													key={field.name}
-													className="p-2 italic text-destructive"
-												>
-													{error?.message}
-												</p>
-										  ))
-										: null}
-								</>
-							)}
-						</form.Field>
-					</fieldset>
+          <fieldset>
+            <form.Field name="password">
+              {field => (
+                <>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    type="text"
+                    placeholder="Enter your password"
+                    onChange={e => field.handleChange(e.target.value)}
+                    onBlur={() => handleBlur('password')}
+                  />
+                  {touched.password && field.state.meta.errors
+                    ? field.state.meta.errors.map(error => (
+                        <p key={field.name} className="p-2 italic text-destructive">
+                          {error?.message}
+                        </p>
+                      ))
+                    : null}
+                </>
+              )}
+            </form.Field>
+          </fieldset>
 
-					<Button onClick={form.handleSubmit}>Submit</Button>
-				</Card>
-			</div>
-			<div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
-				<div className="flex justify-between items-center px-8 py-4 w-full">
-					<img
-						width={80}
-						src="src/assets/mollets-cassoulet-full.svg"
-						alt="Incubated in Les Mollets Cassoulet"
-					></img>
+          <Button onClick={form.handleSubmit}>Submit</Button>
+        </Card>
+      </div>
+      <div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
+        <div className="flex justify-between items-center px-8 py-4 w-full">
+          <img width={80} src={molletsCassoulet} alt="Incubated in Les Mollets Cassoulet"></img>
 
-					<img
-						width={100}
-						src="src/assets/strava-white.svg"
-						alt="powered by Strava"
-					></img>
-				</div>
-			</div>
-		</>
-	);
+          <img width={100} src={stravaWhite} alt="powered by Strava"></img>
+        </div>
+      </div>
+    </>
+  );
 }
