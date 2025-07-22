@@ -1,4 +1,4 @@
-import { environment } from "@/environments/environment";
+const env = import.meta.env;
 
 export const authorizeStrava = async () => {
   if (!environment.strava.clientId) {

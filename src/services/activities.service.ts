@@ -1,22 +1,21 @@
-import { environment } from "@/environments/environment";
-import { toast } from "sonner";
-import * as userService from "./users.service";
-import { Activity } from "@/interfaces/strava";
+import { toast } from 'sonner';
+import * as userService from './users.service';
+import { Activity } from '@/interfaces/strava';
 
-const apiUrl = environment.apiUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const headers = {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
 };
 
 export const loadActivities = async (): Promise<Activity[] | undefined> => {
   const tokenValid = await checkStravaTokensValidity();
   if (!tokenValid) await userService.refreshStravaTokens();
 
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = localStorage.getItem('accessToken');
   if (!accessToken) {
-    toast.error("You are not identified");
+    toast.error('You are not identified');
     return;
   }
 
@@ -28,7 +27,7 @@ export const loadActivities = async (): Promise<Activity[] | undefined> => {
 };
 
 const checkStravaTokensValidity = async () => {
-  const tokenExpiresAt = localStorage.getItem("tokenExpiresAt");
+  const tokenExpiresAt = localStorage.getItem('tokenExpiresAt');
 
   if (!tokenExpiresAt) return false;
   const now = new Date();

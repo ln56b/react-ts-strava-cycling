@@ -1,8 +1,7 @@
 import { Theme } from '@/interfaces/project';
-import { environment } from '../environments/environment';
 import { toast } from 'sonner';
 
-const apiUrl = environment.apiUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const headers = {
   'Content-Type': 'application/json',
