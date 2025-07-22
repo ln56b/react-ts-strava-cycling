@@ -4,53 +4,34 @@ import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
 import Menu from './menu';
 import { useState } from 'react';
+import molletsCassoulet from '@/assets/mollets-cassoulet-full.svg';
+import stravaWhite from '@/assets/strava-white.svg';
+import stravaBlack from '@/assets/strava-black.svg';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-	const { logout } = useAuth();
-	const { toggleTheme, theme } = useTheme();
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-	return (
-		<div className="p-4 h-screen">
-			<div className="flex gap-2 justify-end items-center">
-				<Switch onClick={toggleTheme}>Toggle Theme</Switch>
-				<Button variant="outline" onClick={logout}>
-					Logout
-				</Button>
-			</div>
-			<div className="lg:grid lg:grid-cols-12 lg:h-9/10">
-				<Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-				<main
-					className={`col-span-12 lg:col-span-10 ${
-						isMenuOpen ? 'opacity-20' : ''
-					}`}
-				>
-					{children}
-				</main>
-			</div>
-			<div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
-				<div className="flex justify-between items-center px-8 py-4 w-full">
-					<img
-						width={80}
-						src={
-							theme === 'dark'
-								? 'src/assets/mollets-cassoulet-full.svg'
-								: 'src/assets/mollets-cassoulet-full.svg'
-						}
-						alt="Incubated in Les Mollets Cassoulet"
-					></img>
+  return (
+    <div className="p-4 h-screen">
+      <div className="flex gap-2 justify-end items-center">
+        <Switch onClick={toggleTheme}>Toggle Theme</Switch>
+        <Button variant="outline" onClick={logout}>
+          Logout
+        </Button>
+      </div>
+      <div className="lg:grid lg:grid-cols-12 lg:h-9/10">
+        <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+        <main className={`col-span-12 lg:col-span-10 ${isMenuOpen ? 'opacity-20' : ''}`}>{children}</main>
+      </div>
+      <div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
+        <div className="flex justify-between items-center px-8 py-4 w-full">
+          <img width={80} src={molletsCassoulet} alt="Incubated in Les Mollets Cassoulet"></img>
 
-					<img
-						width={100}
-						src={
-							theme === 'dark'
-								? 'src/assets/strava-white.svg'
-								: 'src/assets/strava-black.svg'
-						}
-						alt="powered by Strava"
-					></img>
-				</div>
-			</div>
-		</div>
-	);
+          <img width={100} src={theme === 'dark' ? stravaWhite : stravaBlack} alt="powered by Strava"></img>
+        </div>
+      </div>
+    </div>
+  );
 }

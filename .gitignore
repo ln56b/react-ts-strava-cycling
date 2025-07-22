@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-/src/environments/environment.ts
+.env.prod
+.env
 

@@ -1,8 +1,7 @@
 import { Theme } from '@/interfaces/project';
-import { environment } from '../environments/environment';
 import { toast } from 'sonner';
 
-const apiUrl = environment.apiUrl;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const headers = {
   'Content-Type': 'application/json',
@@ -63,4 +62,18 @@ export const postStravaToken = async (code: string) => {
   });
 
   return response.json();
+};
+
+export const authorizeStrava = async () => {
+  const response = await fetch(`${apiUrl}/users/strava-authorize`, {
+    method: 'GET',
+    headers,
+  });
+
+  const data = await response.json();
+  if (data.url) {
+    window.location.href = data.url;
+  } else {
+    toast.error('Failed to get Strava authorization URL');
+  }
 };
