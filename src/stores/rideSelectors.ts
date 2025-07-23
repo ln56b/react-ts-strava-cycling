@@ -1,4 +1,4 @@
-import { getMonthName } from '@/utils/utils';
+import { getFourWeeksFromToday, getMonthName } from '@/utils/utils';
 import { ActivityState } from './activitiesStore';
 import { createSelector } from 'reselect';
 import { DateSection } from '@/interfaces/project';
@@ -148,6 +148,87 @@ const totalElevationInMetersSplitByMonth = (dateSection: DateSection) =>
     );
   });
 
+const totalActivitiesSplitByWeek = (dateSection: DateSection) =>
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: string; count: number }[] => {
+    const result = filteredByDateRides.reduce(
+      (acc, activity) => {
+        const weeksFromToday = getFourWeeksFromToday();
+
+        for (const week in weeksFromToday) {
+          if (!acc.find(w => w.week === week)) {
+            acc.push({ week, count: 0 });
+          }
+
+          if (
+            new Date(activity.start_date) >= new Date(weeksFromToday[week].from) &&
+            new Date(activity.start_date) <= new Date(weeksFromToday[week].to)
+          ) {
+            const existingWeek = acc.find(w => w.week === week);
+            if (existingWeek) {
+              existingWeek.count++;
+            } else {
+              acc.push({ week, count: 1 });
+            }
+          }
+        }
+        return acc;
+      },
+      [] as { week: string; count: number }[],
+    );
+    return result;
+  });
+
+const totalKmByDateSplitByWeek = (dateSection: DateSection) =>
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: number; km: number }[] => {
+    return filteredByDateRides.reduce(
+      (acc, activity) => {
+        const week = Number(activity.start_date.split('-')[0]);
+        const existingWeek = acc.find(w => w.week === week);
+        if (existingWeek) {
+          existingWeek.km += Number((activity.distance / 1000).toFixed(0));
+        } else {
+          acc.push({ week, km: Number((activity.distance / 1000).toFixed(0)) });
+        }
+        return acc;
+      },
+      [] as { week: number; km: number }[],
+    );
+  });
+
+const totalDurationInHoursSplitByWeek = (dateSection: DateSection) =>
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: number; hours: number }[] => {
+    return filteredByDateRides.reduce(
+      (acc, activity) => {
+        const week = Number(activity.start_date.split('-')[0]);
+        const existingWeek = acc.find(w => w.week === week);
+        if (existingWeek) {
+          existingWeek.hours += Number((activity.moving_time / 3600).toFixed(0)); // from seconds to hours
+        } else {
+          acc.push({ week, hours: Number((activity.moving_time / 3600).toFixed(0)) });
+        }
+        return acc;
+      },
+      [] as { week: number; hours: number }[],
+    );
+  });
+
+const totalElevationInMetersSplitByWeek = (dateSection: DateSection) =>
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: number; meters: number }[] => {
+    return filteredByDateRides.reduce(
+      (acc, activity) => {
+        const week = Number(activity.start_date.split('-')[0]);
+        const existingWeek = acc.find(w => w.week === week);
+        if (existingWeek) {
+          existingWeek.meters += Number(activity.total_elevation_gain.toFixed(0));
+        } else {
+          acc.push({ week, meters: Number(activity.total_elevation_gain.toFixed(0)) });
+        }
+        return acc;
+      },
+      [] as { week: number; meters: number }[],
+    );
+  });
+
 const averageKm = createSelector([totalKm, totalActivities], (totalKm, totalActivities): number => {
   return totalKm / totalActivities;
 });
@@ -190,12 +271,12 @@ const maxSpeedKmPerHour = (state: ActivityState): number => {
   const maxSpeed = state.cyclingRides.reduce((acc, activity) => {
     return Math.max(acc, activity.max_speed);
   }, 0);
-  return maxSpeed * 3.6;
+  return maxSpeed;
 };
 
 const maxElevationInMeters = (state: ActivityState): number => {
   const maxElevation = state.cyclingRides.reduce((acc, activity) => {
-    return Math.max(acc, activity.elev_high);
+    return Math.max(acc, activity.elev_high ?? 0);
   }, 0);
   return maxElevation;
 };
@@ -205,6 +286,12 @@ const maxDurationInHours = (state: ActivityState): number => {
     return Math.max(acc, activity.moving_time / 3600); // from seconds to hours
   }, 0);
   return maxDuration;
+};
+
+const maxDistanceKm = (state: ActivityState): number => {
+  return state.cyclingRides.reduce((acc, activity) => {
+    return Math.max(acc, activity.distance / 1000);
+  }, 0);
 };
 
 const activiesCountBetweenOneHundredAndTwoHundredKm = (state: ActivityState): number => {
@@ -307,6 +394,7 @@ export const rideAllTimesMetrics = createSelector(
       maxSpeedKmPerHour: maxSpeedKmPerHour(state),
       maxElevationInMeters: maxElevationInMeters(state),
       maxDurationInHours: maxDurationInHours(state),
+      maxDistanceKm: maxDistanceKm(state),
       activiesCountBetweenOneHundredAndTwoHundredKm: activiesCountBetweenOneHundredAndTwoHundredKm(state),
       activiesCountWithMoreThanTwoHundredKm: activiesCountWithMoreThanTwoHundredKm(state),
       activeDaysCount: activeDaysCount(state),
@@ -327,6 +415,10 @@ export const rideFilteredByDateMetrics = (dateSection: DateSection) =>
         totalDurationInHours: totalDurationInHoursByDate(dateSection)(state),
         averageKm: averageKmByDate(dateSection)(state),
         averageDurationInHours: averageDurationInHoursByDate(dateSection)(state),
+        totalActivitiesSplitByWeek: totalActivitiesSplitByWeek(DateSection.PastFourWeeks)(state),
+        totalKmByDateSplitByWeek: totalKmByDateSplitByWeek(DateSection.PastFourWeeks)(state),
+        totalDurationInHoursSplitByWeek: totalDurationInHoursSplitByWeek(DateSection.PastFourWeeks)(state),
+        totalElevationInMetersSplitByWeek: totalElevationInMetersSplitByWeek(DateSection.PastFourWeeks)(state),
         totalKmByDateSplitByMonth: totalKmByDateSplitByMonth(dateSection)(state),
         totalDurationInHoursSplitByMonth: totalDurationInHoursSplitByMonth(dateSection)(state),
         totalElevationInMetersSplitByMonth: totalElevationInMetersSplitByMonth(dateSection)(state),
