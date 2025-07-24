@@ -13,6 +13,7 @@ import {
 import { ActivityType, DateSection, Filters } from '@/interfaces/project';
 
 export interface ActivityState {
+  allActivities: Activity[];
   cyclingRides: Activity[];
   selectedSport: ActivityType;
   filters: Filters;
@@ -26,6 +27,7 @@ interface ActivityActions {
 }
 
 export const activitiesInitialState: ActivityState = {
+  allActivities: [],
   cyclingRides: [],
   selectedSport: 'cycling',
   filters: {
@@ -59,7 +61,7 @@ const createActivitiesStore = (set: (partial: Partial<ActivityState & ActivityAc
 
     const rides = allActivities?.filter(activity => rideSports.includes(activity?.type as SportTypes));
 
-    set({ cyclingRides: rides, loading: false });
+    set({ allActivities, cyclingRides: rides, loading: false });
   },
   setFilters: (filters: Filters) => set({ filters }),
   setLoading: (loading: boolean) => set({ loading }),
