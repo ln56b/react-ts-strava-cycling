@@ -68,22 +68,33 @@ const totalActivities = (state: ActivityState): number => {
   return state.cyclingRides.length;
 };
 
-const totalActivitiesSplitByMonth = (state: ActivityState): { month: string; count: number }[] => {
-  return state.cyclingRides.reduce(
-    (acc, activity) => {
-      const month = activity.start_date.split('-')[1];
-      const monthName = getMonthName(Number(month));
-      const existingMonth = acc.find(m => m.month === monthName);
-      if (existingMonth) {
-        existingMonth.count++;
-      } else {
-        acc.push({ month: monthName, count: 1 });
-      }
-      return acc;
-    },
-    [] as { month: string; count: number }[],
-  );
-};
+const totalActivitiesByDateSplitByMonth = (dateSection: DateSection) =>
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { month: string; activities: number }[] => {
+    return filteredByDateRides.reduce(
+      (acc, activity) => {
+        const month = activity.start_date.split('-')[1];
+        const monthName = getMonthName(Number(month));
+
+        const isCurrentYear = new Date().getFullYear() === Number(activity.start_date.split('-')[0]);
+        const finalMonth = isCurrentYear ? Number(month) : 12;
+        for (let i = 1; i <= finalMonth; i++) {
+          const monthName = getMonthName(i);
+          if (!acc.find(m => m.month === monthName)) {
+            acc.push({ month: monthName, activities: 0 });
+          }
+        }
+
+        const existingMonth = acc.find(m => m.month === monthName);
+        if (existingMonth) {
+          existingMonth.activities++;
+        } else {
+          acc.push({ month: monthName, activities: 1 });
+        }
+        return acc;
+      },
+      [] as { month: string; activities: number }[],
+    );
+  });
 
 const totalKmByDateSplitByMonth = (dateSection: DateSection) =>
   createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { month: string; km: number }[] => {
@@ -91,6 +102,16 @@ const totalKmByDateSplitByMonth = (dateSection: DateSection) =>
       (acc, activity) => {
         const month = activity.start_date.split('-')[1];
         const monthName = getMonthName(Number(month));
+
+        const isCurrentYear = new Date().getFullYear() === Number(activity.start_date.split('-')[0]);
+        const finalMonth = isCurrentYear ? Number(month) : 12;
+        for (let i = 1; i <= finalMonth; i++) {
+          const monthName = getMonthName(i);
+          if (!acc.find(m => m.month === monthName)) {
+            acc.push({ month: monthName, km: 0 });
+          }
+        }
+
         const existingMonth = acc.find(m => m.month === monthName);
         if (existingMonth) {
           existingMonth.km += Number((activity.distance / 1000).toFixed(0));
@@ -106,33 +127,22 @@ const totalKmByDateSplitByMonth = (dateSection: DateSection) =>
     );
   });
 
-const totalDurationInHoursSplitByMonth = (dateSection: DateSection) =>
-  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { month: string; hours: number }[] => {
-    return filteredByDateRides.reduce(
-      (acc, activity) => {
-        const month = activity.start_date.split('-')[1];
-        const monthName = getMonthName(Number(month));
-        const existingMonth = acc.find(m => m.month === monthName);
-        if (existingMonth) {
-          existingMonth.hours += Number((activity.moving_time / 3600).toFixed(0)); // from seconds to hours
-        } else {
-          acc.push({
-            month: monthName,
-            hours: Number((activity.moving_time / 3600).toFixed(0)),
-          });
-        }
-        return acc;
-      },
-      [] as { month: string; hours: number }[],
-    );
-  });
-
 const totalElevationInMetersSplitByMonth = (dateSection: DateSection) =>
   createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { month: string; meters: number }[] => {
     return filteredByDateRides.reduce(
       (acc, activity) => {
         const month = activity.start_date.split('-')[1];
         const monthName = getMonthName(Number(month));
+
+        const isCurrentYear = new Date().getFullYear() === Number(activity.start_date.split('-')[0]);
+        const finalMonth = isCurrentYear ? Number(month) : 12;
+        for (let i = 1; i <= finalMonth; i++) {
+          const monthName = getMonthName(i);
+          if (!acc.find(m => m.month === monthName)) {
+            acc.push({ month: monthName, meters: 0 });
+          }
+        }
+
         const existingMonth = acc.find(m => m.month === monthName);
         if (existingMonth) {
           existingMonth.meters += Number(activity.total_elevation_gain.toFixed(0));
@@ -149,14 +159,43 @@ const totalElevationInMetersSplitByMonth = (dateSection: DateSection) =>
   });
 
 const totalActivitiesSplitByWeek = (dateSection: DateSection) =>
-  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: string; count: number }[] => {
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: string; activities: number }[] => {
     const result = filteredByDateRides.reduce(
       (acc, activity) => {
         const weeksFromToday = getFourWeeksFromToday();
 
         for (const week in weeksFromToday) {
           if (!acc.find(w => w.week === week)) {
-            acc.push({ week, count: 0 });
+            acc.push({ week, activities: 0 });
+          }
+          if (
+            new Date(activity.start_date) >= new Date(weeksFromToday[week].from) &&
+            new Date(activity.start_date) <= new Date(weeksFromToday[week].to)
+          ) {
+            const existingWeek = acc.find(w => w.week === week);
+            if (existingWeek) {
+              existingWeek.activities++;
+            } else {
+              acc.push({ week, activities: 1 });
+            }
+          }
+        }
+        return acc;
+      },
+      [] as { week: string; activities: number }[],
+    );
+    return result;
+  });
+
+const totalKmByDateSplitByWeek = (dateSection: DateSection) =>
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: string; km: number }[] => {
+    const result = filteredByDateRides.reduce(
+      (acc, activity) => {
+        const weeksFromToday = getFourWeeksFromToday();
+
+        for (const week in weeksFromToday) {
+          if (!acc.find(w => w.week === week)) {
+            acc.push({ week, km: 0 });
           }
 
           if (
@@ -165,68 +204,47 @@ const totalActivitiesSplitByWeek = (dateSection: DateSection) =>
           ) {
             const existingWeek = acc.find(w => w.week === week);
             if (existingWeek) {
-              existingWeek.count++;
+              existingWeek.km += Number((activity.distance / 1000).toFixed(0));
             } else {
-              acc.push({ week, count: 1 });
+              acc.push({ week, km: Number((activity.distance / 1000).toFixed(0)) });
             }
           }
         }
         return acc;
       },
-      [] as { week: string; count: number }[],
+      [] as { week: string; km: number }[],
     );
     return result;
   });
 
-const totalKmByDateSplitByWeek = (dateSection: DateSection) =>
-  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: number; km: number }[] => {
-    return filteredByDateRides.reduce(
-      (acc, activity) => {
-        const week = Number(activity.start_date.split('-')[0]);
-        const existingWeek = acc.find(w => w.week === week);
-        if (existingWeek) {
-          existingWeek.km += Number((activity.distance / 1000).toFixed(0));
-        } else {
-          acc.push({ week, km: Number((activity.distance / 1000).toFixed(0)) });
-        }
-        return acc;
-      },
-      [] as { week: number; km: number }[],
-    );
-  });
-
-const totalDurationInHoursSplitByWeek = (dateSection: DateSection) =>
-  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: number; hours: number }[] => {
-    return filteredByDateRides.reduce(
-      (acc, activity) => {
-        const week = Number(activity.start_date.split('-')[0]);
-        const existingWeek = acc.find(w => w.week === week);
-        if (existingWeek) {
-          existingWeek.hours += Number((activity.moving_time / 3600).toFixed(0)); // from seconds to hours
-        } else {
-          acc.push({ week, hours: Number((activity.moving_time / 3600).toFixed(0)) });
-        }
-        return acc;
-      },
-      [] as { week: number; hours: number }[],
-    );
-  });
-
 const totalElevationInMetersSplitByWeek = (dateSection: DateSection) =>
-  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: number; meters: number }[] => {
-    return filteredByDateRides.reduce(
+  createSelector([filteredByDateRides(dateSection)], (filteredByDateRides): { week: string; meters: number }[] => {
+    const result = filteredByDateRides.reduce(
       (acc, activity) => {
-        const week = Number(activity.start_date.split('-')[0]);
-        const existingWeek = acc.find(w => w.week === week);
-        if (existingWeek) {
-          existingWeek.meters += Number(activity.total_elevation_gain.toFixed(0));
-        } else {
-          acc.push({ week, meters: Number(activity.total_elevation_gain.toFixed(0)) });
+        const weeksFromToday = getFourWeeksFromToday();
+
+        for (const week in weeksFromToday) {
+          if (!acc.find(w => w.week === week)) {
+            acc.push({ week, meters: 0 });
+          }
+
+          if (
+            new Date(activity.start_date) >= new Date(weeksFromToday[week].from) &&
+            new Date(activity.start_date) <= new Date(weeksFromToday[week].to)
+          ) {
+            const existingWeek = acc.find(w => w.week === week);
+            if (existingWeek) {
+              existingWeek.meters += Number(activity.total_elevation_gain.toFixed(0));
+            } else {
+              acc.push({ week, meters: Number(activity.total_elevation_gain.toFixed(0)) });
+            }
+          }
         }
         return acc;
       },
-      [] as { week: number; meters: number }[],
+      [] as { week: string; meters: number }[],
     );
+    return result;
   });
 
 const averageKm = createSelector([totalKm, totalActivities], (totalKm, totalActivities): number => {
@@ -386,7 +404,6 @@ export const rideAllTimesMetrics = createSelector(
       totalElevationInMeters: totalElevationInMeters(state),
       totalDurationInHours: totalDurationInHours(state),
       totalActivities: totalActivities(state),
-      totalActivitiesSplitByMonth: totalActivitiesSplitByMonth(state),
       averageKm: averageKm(state),
       averageElevationInMeters: averageElevationInMeters(state),
       averageDurationInHours: averageDurationInHours(state),
@@ -417,10 +434,9 @@ export const rideFilteredByDateMetrics = (dateSection: DateSection) =>
         averageDurationInHours: averageDurationInHoursByDate(dateSection)(state),
         totalActivitiesSplitByWeek: totalActivitiesSplitByWeek(DateSection.PastFourWeeks)(state),
         totalKmByDateSplitByWeek: totalKmByDateSplitByWeek(DateSection.PastFourWeeks)(state),
-        totalDurationInHoursSplitByWeek: totalDurationInHoursSplitByWeek(DateSection.PastFourWeeks)(state),
         totalElevationInMetersSplitByWeek: totalElevationInMetersSplitByWeek(DateSection.PastFourWeeks)(state),
+        totalActivitiesSplitByMonth: totalActivitiesByDateSplitByMonth(dateSection)(state),
         totalKmByDateSplitByMonth: totalKmByDateSplitByMonth(dateSection)(state),
-        totalDurationInHoursSplitByMonth: totalDurationInHoursSplitByMonth(dateSection)(state),
         totalElevationInMetersSplitByMonth: totalElevationInMetersSplitByMonth(dateSection)(state),
       };
     },

@@ -21,10 +21,15 @@ export function getCurrentYear(): string {
 export function getFourWeeksFromToday(): { [string: string]: { from: string; to: string } } {
   const weeksFromToday: { [string: string]: { from: string; to: string } } = {};
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 3; i >= 0; i--) {
     const from = new Date(new Date().setDate(new Date().getDate() - 7 * (i + 1)));
     const to = new Date(new Date().setDate(new Date().getDate() - 7 * i));
-    weeksFromToday[`W${i + 1}`] = { from: from.toISOString(), to: to.toISOString() };
+    const formattedFrom = `${from.toISOString().slice(0, 10).split('-')[1]}/${from.toISOString().slice(0, 10).split('-')[2]}`;
+    const formattedTo = `${to.toISOString().slice(0, 10).split('-')[1]}/${to.toISOString().slice(0, 10).split('-')[2]}`;
+    weeksFromToday[`${formattedFrom}-${formattedTo}`] = {
+      from: from.toISOString(),
+      to: to.toISOString(),
+    };
   }
 
   return weeksFromToday;

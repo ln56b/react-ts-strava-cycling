@@ -1,6 +1,10 @@
+import DateFilters from '@/components/layout/dateFilters';
+import ChartsSection from '@/components/ui/chartsSection';
 import PageContainer from '@/components/ui/pageContainer';
+import PageSection from '@/components/ui/pageSection';
 import StatsSection from '@/components/ui/statsSection';
 import { DateSection } from '@/interfaces/project';
+import { useAuth } from '@/providers/authProvider';
 import { useActivitiesStore } from '@/stores/activitiesStore';
 import { athleteId, firstRideYear, rideAllTimesMetrics, rideFilteredByDateMetrics } from '@/stores/rideSelectors';
 import {
@@ -10,15 +14,10 @@ import {
   yearsFromStringDateUntilNow,
 } from '@/utils/utils';
 import { useEffect, useState } from 'react';
-import BarChartCard from '../components/layout/barChartCard';
-import LineChartCard from '../components/layout/lineChartCard';
-import MetricCard from '../components/ui/metricCard';
+import { useSearchParams } from 'react-router';
 import ChartSkeleton from '../components/skeletons/chartSkeleton';
 import MetricCardSkeleton from '../components/skeletons/metricCardSkeleton';
-import DateFilters from '@/components/layout/dateFilters';
-import PageSection from '@/components/ui/pageSection';
-import { useAuth } from '@/providers/authProvider';
-import { useSearchParams } from 'react-router';
+import MetricCard from '../components/ui/metricCard';
 
 export default function Rides() {
   const { loading } = useActivitiesStore();
@@ -101,12 +100,32 @@ export default function Rides() {
           {loading ? (
             <ChartSkeleton title="Over time" />
           ) : (
-            <BarChartCard
-              title="Over time"
-              data={pastFourWeeksMetrics.totalActivitiesSplitByWeek}
-              key1="week"
-              key2="count"
-            />
+            <>
+              <ChartsSection
+                charts={[
+                  {
+                    type: 'line',
+                    value: 'activities',
+                    data: pastFourWeeksMetrics.totalActivitiesSplitByWeek,
+                    key1: 'week',
+                    key2: 'activities',
+                  },
+                  {
+                    type: 'bar',
+                    value: 'distance',
+                    data: pastFourWeeksMetrics.totalKmByDateSplitByWeek,
+                    key1: 'week',
+                    key2: 'km',
+                  },
+                  {
+                    type: 'line',
+                    value: 'elevation',
+                    data: pastFourWeeksMetrics.totalElevationInMetersSplitByWeek,
+                    key1: 'week',
+                    key2: 'meters',
+                  },
+                ]}></ChartsSection>
+            </>
           )}
         </StatsSection>
       </PageSection>
@@ -141,6 +160,38 @@ export default function Rides() {
                 value={Number(calendarYearMetrics.totalDurationInHours.toFixed())}
                 unit="h"
               />
+            </>
+          )}
+        </StatsSection>
+        <StatsSection>
+          {loading ? (
+            <ChartSkeleton title="Over time" />
+          ) : (
+            <>
+              <ChartsSection
+                charts={[
+                  {
+                    type: 'line',
+                    value: 'activities',
+                    data: calendarYearMetrics.totalActivitiesSplitByMonth,
+                    key1: 'month',
+                    key2: 'activities',
+                  },
+                  {
+                    type: 'bar',
+                    value: 'distance',
+                    data: calendarYearMetrics.totalKmByDateSplitByMonth,
+                    key1: 'month',
+                    key2: 'km',
+                  },
+                  {
+                    type: 'line',
+                    value: 'elevation',
+                    data: calendarYearMetrics.totalElevationInMetersSplitByMonth,
+                    key1: 'month',
+                    key2: 'meters',
+                  },
+                ]}></ChartsSection>
             </>
           )}
         </StatsSection>
@@ -191,28 +242,6 @@ export default function Rides() {
           )}
         </StatsSection>
       </PageSection>
-
-      {loading ? (
-        <section className="grid grid-cols-12 col-span-12 gap-4 justify-center items-center w-full h-full lg:col-span-12">
-          <ChartSkeleton title="Revenue Analytics" />
-          <ChartSkeleton title="Total Visits" />
-        </section>
-      ) : (
-        <section className="grid grid-cols-12 col-span-12 gap-4 justify-center items-center w-full h-full lg:col-span-12">
-          <LineChartCard
-            title="Activities per month"
-            data={allTimeMetrics.totalActivitiesSplitByMonth}
-            key1="month"
-            key2="count"
-          />
-          <BarChartCard
-            title="Activities per month"
-            data={allTimeMetrics.totalActivitiesSplitByMonth}
-            key1="month"
-            key2="count"
-          />
-        </section>
-      )}
     </PageContainer>
   );
 }
