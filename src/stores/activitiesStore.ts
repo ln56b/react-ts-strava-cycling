@@ -1,16 +1,16 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 
-import { Activity, rideSports, SportTypes } from "@/interfaces/strava";
-import { loadActivities } from "@/services/activities.service";
+import { Activity, rideSports, SportTypes } from '@/interfaces/strava';
+import { loadActivities } from '@/services/activities.service';
 import {
   firstDayOfYear,
   getCurrentYear,
   lastDayOfYear,
   lastFourWeeksMonday,
   sameDayInPreviousYear,
-} from "@/utils/utils";
-import { ActivityType, DateSection, Filters } from "@/interfaces/project";
+} from '@/utils/utils';
+import { ActivityType, DateSection, Filters } from '@/interfaces/project';
 
 export interface ActivityState {
   cyclingRides: Activity[];
@@ -27,7 +27,7 @@ interface ActivityActions {
 
 export const activitiesInitialState: ActivityState = {
   cyclingRides: [],
-  selectedSport: "cycling",
+  selectedSport: 'cycling',
   filters: {
     [DateSection.PastFourWeeks]: {
       dates: {
@@ -52,16 +52,12 @@ export const activitiesInitialState: ActivityState = {
   error: null,
 };
 
-const createActivitiesStore = (
-  set: (partial: Partial<ActivityState & ActivityActions>) => void
-) => ({
+const createActivitiesStore = (set: (partial: Partial<ActivityState & ActivityActions>) => void) => ({
   ...activitiesInitialState,
   fetchActivities: async () => {
     const allActivities = await loadActivities();
 
-    const rides = allActivities?.filter((activity) =>
-      rideSports.includes(activity?.type as SportTypes)
-    );
+    const rides = allActivities?.filter(activity => rideSports.includes(activity?.type as SportTypes));
 
     set({ cyclingRides: rides, loading: false });
   },
@@ -71,5 +67,10 @@ const createActivitiesStore = (
 });
 
 export const useActivitiesStore = create<ActivityState & ActivityActions>()(
-  devtools((set) => createActivitiesStore(set), { name: "ActivitiesStore" })
+  persist(
+    devtools(set => createActivitiesStore(set), { name: 'ActivitiesStore' }),
+    {
+      name: 'activities',
+    },
+  ),
 );
