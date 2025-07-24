@@ -14,16 +14,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="p-4 h-screen">
+    <div className="p-4">
       <div className="flex gap-2 justify-end items-center">
         <Switch onClick={toggleTheme}>Toggle Theme</Switch>
         <Button variant="outline" onClick={logout}>
           Logout
         </Button>
       </div>
-      <div className="lg:grid lg:grid-cols-12 lg:h-9/10">
+      <div className="lg:grid lg:grid-cols-12">
         <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-        <main className={`col-span-12 lg:col-span-10 ${isMenuOpen ? 'opacity-20' : ''}`}>{children}</main>
+        <main
+          className={`col-span-12 lg:col-span-10 overflow-y-scroll max-h-[calc(100vh-112px)] ${isMenuOpen ? 'opacity-20' : ''}`}>
+          {children}
+        </main>
       </div>
       <div className="fixed bottom-0 w-full flex justify-end bg-accent-foreground dark:bg-accent-foreground">
         <div className="flex justify-between items-center px-8 py-4 w-full">
