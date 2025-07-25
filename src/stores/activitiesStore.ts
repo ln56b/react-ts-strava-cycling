@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { Activity, rideSports, SportTypes } from '@/interfaces/strava';
+import { ActivityType, DateSection, Filters } from '@/interfaces/project';
+import { Activity } from '@/interfaces/strava';
 import { loadActivities } from '@/services/activities.service';
 import {
   firstDayOfYear,
@@ -10,11 +11,9 @@ import {
   lastFourWeeksMonday,
   sameDayInPreviousYear,
 } from '@/utils/utils';
-import { ActivityType, DateSection, Filters } from '@/interfaces/project';
 
 export interface ActivityState {
-  allActivities: Activity[];
-  cyclingRides: Activity[];
+  activities: Activity[];
   selectedSport: ActivityType;
   filters: Filters;
   loading: boolean;
@@ -27,8 +26,7 @@ interface ActivityActions {
 }
 
 export const activitiesInitialState: ActivityState = {
-  allActivities: [],
-  cyclingRides: [],
+  activities: [],
   selectedSport: 'cycling',
   filters: {
     [DateSection.PastFourWeeks]: {
@@ -59,9 +57,7 @@ const createActivitiesStore = (set: (partial: Partial<ActivityState & ActivityAc
   fetchActivities: async () => {
     const allActivities = await loadActivities();
 
-    const rides = allActivities?.filter(activity => rideSports.includes(activity?.type as SportTypes));
-
-    set({ allActivities, cyclingRides: rides, loading: false });
+    set({ activities: allActivities, loading: false });
   },
   setFilters: (filters: Filters) => set({ filters }),
   setLoading: (loading: boolean) => set({ loading }),

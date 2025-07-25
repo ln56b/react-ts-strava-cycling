@@ -3,7 +3,7 @@ import { ActivityDataTable } from '@/components/layout/activityTable/dataTable';
 import { useActivitiesStore } from '@/stores/activitiesStore';
 
 export default function ActivityList() {
-  const { allActivities } = useActivitiesStore();
+  const { activities: allActivities } = useActivitiesStore();
 
   return (
     <div className="container mx-auto py-10">
