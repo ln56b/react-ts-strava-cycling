@@ -274,20 +274,6 @@ const totalElevationBySportAndDateInMetersSplitByWeek = (sport: SportTypes | Spo
     },
   );
 
-const averageKmBySport = createSelector(
-  [totalKmBySport, totalActivitiesBySport],
-  (totalKm, totalActivities): number => {
-    return totalKm / totalActivities;
-  },
-);
-
-const averageSpeedKmPerHourBySport = createSelector(
-  [totalKmBySport, totalDurationInHoursBySport],
-  (totalKm, totalDurationInHours): number => {
-    return totalKm / totalDurationInHours;
-  },
-);
-
 const maxSpeedKmPerHourBySport = (sport: SportTypes | SportTypes[], state: ActivityState): number => {
   const maxSpeed = filterBySport(state.activities, sport).reduce((acc, activity) => {
     return Math.max(acc, activity.max_speed);
@@ -411,14 +397,12 @@ export const rideAllTimesMetrics = createSelector(
       totalElevationInMeters: totalElevationInMetersBySport(rideSports, state),
       totalDurationInHours: totalDurationInHoursBySport(rideSports, state),
       totalActivities: totalActivitiesBySport(rideSports, state),
-      averageKm: averageKmBySport(rideSports, state),
-      averageSpeedKmPerHour: averageSpeedKmPerHourBySport(rideSports, state),
       maxSpeedKmPerHour: maxSpeedKmPerHourBySport(rideSports, state),
       maxElevationInMeters: maxElevationInMetersBySport(rideSports, state),
       maxDurationInHours: maxDurationInHoursBySport(rideSports, state),
       maxDistanceKm: maxDistanceKmBySport(rideSports, state),
-      activiesCountBetweenOneHundredAndTwoHundredKm: ridesCountBetweenOneHundredAndTwoHundredKm(state),
-      activiesCountWithMoreThanTwoHundredKm: ridesCountWithMoreThanTwoHundredKm(state),
+      ridesCountBetweenOneHundredAndTwoHundredKm: ridesCountBetweenOneHundredAndTwoHundredKm(state),
+      ridesCountWithMoreThanTwoHundredKm: ridesCountWithMoreThanTwoHundredKm(state),
       activeDaysCount: activeDaysCountBySport(rideSports, state),
       highestCountOfConsecutiveActiveDays: highestCountOfConsecutiveActiveDaysBySport(rideSports, state),
       eddingtonMetrics: eddingtonMetrics(state),
@@ -448,6 +432,88 @@ export const rideFilteredByDateMetrics = (dateSection: DateSection) =>
         totalKmByDateSplitByMonth: totalKmBySportAndDateSplitByMonth(rideSports, dateSection)(state),
         totalElevationInMetersSplitByMonth: totalElevationInMetersBySportAndDateSplitByMonth(
           rideSports,
+          dateSection,
+        )(state),
+      };
+    },
+  );
+
+export const hikeAllTimesMetrics = createSelector(
+  (state: ActivityState) => state,
+  state => {
+    return {
+      totalKm: totalKmBySport(SportTypes.Hike, state),
+      totalElevationInMeters: totalElevationInMetersBySport(SportTypes.Hike, state),
+      totalDurationInHours: totalDurationInHoursBySport(SportTypes.Hike, state),
+      totalActivities: totalActivitiesBySport(SportTypes.Hike, state),
+      maxSpeedKmPerHour: maxSpeedKmPerHourBySport(SportTypes.Hike, state),
+      maxElevationInMeters: maxElevationInMetersBySport(SportTypes.Hike, state),
+      maxDurationInHours: maxDurationInHoursBySport(SportTypes.Hike, state),
+      maxDistanceKm: maxDistanceKmBySport(SportTypes.Hike, state),
+    };
+  },
+);
+
+export const hikeFilteredByDateMetrics = (dateSection: DateSection) =>
+  createSelector(
+    (state: ActivityState) => state,
+    state => {
+      return {
+        totalActivities: activitiesBySportAndDate(SportTypes.Hike, dateSection)(state),
+        totalKm: totalKmBySportAndDate(SportTypes.Hike, dateSection)(state),
+        totalElevationInMeters: totalElevationInMetersBySportAndDate(SportTypes.Hike, dateSection)(state),
+        totalDurationInHours: totalDurationInHoursBySportAndDate(SportTypes.Hike, dateSection)(state),
+        totalActivitiesSplitByWeek: totalActivitiesBySportAndDateSplitByWeek(SportTypes.Hike, dateSection)(state),
+        totalKmByDateSplitByWeek: totalKmBySportAndDateSplitByWeek(SportTypes.Hike, dateSection)(state),
+        totalElevationInMetersSplitByWeek: totalElevationBySportAndDateInMetersSplitByWeek(
+          SportTypes.Hike,
+          dateSection,
+        )(state),
+        totalActivitiesSplitByMonth: totalActivitiesBySportAndDateSplitByMonth(SportTypes.Hike, dateSection)(state),
+        totalKmByDateSplitByMonth: totalKmBySportAndDateSplitByMonth(SportTypes.Hike, dateSection)(state),
+        totalElevationInMetersSplitByMonth: totalElevationInMetersBySportAndDateSplitByMonth(
+          SportTypes.Hike,
+          dateSection,
+        )(state),
+      };
+    },
+  );
+
+export const runAllTimesMetrics = createSelector(
+  (state: ActivityState) => state,
+  state => {
+    return {
+      totalKm: totalKmBySport(SportTypes.Run, state),
+      totalElevationInMeters: totalElevationInMetersBySport(SportTypes.Run, state),
+      totalDurationInHours: totalDurationInHoursBySport(SportTypes.Run, state),
+      totalActivities: totalActivitiesBySport(SportTypes.Run, state),
+      maxSpeedKmPerHour: maxSpeedKmPerHourBySport(SportTypes.Run, state),
+      maxElevationInMeters: maxElevationInMetersBySport(SportTypes.Run, state),
+      maxDurationInHours: maxDurationInHoursBySport(SportTypes.Run, state),
+      maxDistanceKm: maxDistanceKmBySport(SportTypes.Run, state),
+    };
+  },
+);
+
+export const runFilteredByDateMetrics = (dateSection: DateSection) =>
+  createSelector(
+    (state: ActivityState) => state,
+    state => {
+      return {
+        totalActivities: activitiesBySportAndDate(SportTypes.Run, dateSection)(state),
+        totalKm: totalKmBySportAndDate(SportTypes.Run, dateSection)(state),
+        totalElevationInMeters: totalElevationInMetersBySportAndDate(SportTypes.Run, dateSection)(state),
+        totalDurationInHours: totalDurationInHoursBySportAndDate(SportTypes.Run, dateSection)(state),
+        totalActivitiesSplitByWeek: totalActivitiesBySportAndDateSplitByWeek(SportTypes.Run, dateSection)(state),
+        totalKmByDateSplitByWeek: totalKmBySportAndDateSplitByWeek(SportTypes.Run, dateSection)(state),
+        totalElevationInMetersSplitByWeek: totalElevationBySportAndDateInMetersSplitByWeek(
+          SportTypes.Run,
+          dateSection,
+        )(state),
+        totalActivitiesSplitByMonth: totalActivitiesBySportAndDateSplitByMonth(SportTypes.Run, dateSection)(state),
+        totalKmByDateSplitByMonth: totalKmBySportAndDateSplitByMonth(SportTypes.Run, dateSection)(state),
+        totalElevationInMetersSplitByMonth: totalElevationInMetersBySportAndDateSplitByMonth(
+          SportTypes.Run,
           dateSection,
         )(state),
       };
