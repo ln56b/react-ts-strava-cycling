@@ -53,9 +53,13 @@ export function ActivityDataTable({ columns, data }: ActivityDataTableProps) {
     <>
       <div className="flex items-center py-4">
         <Selector
-          options={Object.values(SportTypes)}
-          value={(table.getColumn('sport_type')?.getFilterValue() as string) || SportTypes.Ride}
-          onHandleChange={value => table.getColumn('sport_type')?.setFilterValue(value)}
+          options={['All', ...Object.values(SportTypes)]}
+          value={(table.getColumn('sport_type')?.getFilterValue() as string) || 'All'}
+          onHandleChange={value =>
+            value === 'All'
+              ? table.getColumn('sport_type')?.setFilterValue(undefined)
+              : table.getColumn('sport_type')?.setFilterValue(value)
+          }
         />
       </div>
       <div className="overflow-hidden rounded-md border">
