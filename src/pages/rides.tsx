@@ -6,7 +6,12 @@ import StatsSection from '@/components/ui/statsSection';
 import { DateSection } from '@/interfaces/project';
 import { useAuth } from '@/providers/authProvider';
 import { useActivitiesStore } from '@/stores/activitiesStore';
-import { athleteId, firstRideYear, rideAllTimesMetrics, rideFilteredByDateMetrics } from '@/stores/rideSelectors';
+import {
+  athleteId,
+  firstActiveYearBySport,
+  rideAllTimesMetrics,
+  rideFilteredByDateMetrics,
+} from '@/stores/activitiesSelectors';
 import {
   formatDateForSelector,
   getCurrentYear,
@@ -18,6 +23,7 @@ import { useSearchParams } from 'react-router';
 import ChartSkeleton from '../components/skeletons/chartSkeleton';
 import MetricCardSkeleton from '../components/skeletons/metricCardSkeleton';
 import MetricCard from '../components/ui/metricCard';
+import { rideSports } from '@/interfaces/strava';
 
 export default function Rides() {
   const { loading } = useActivitiesStore();
@@ -26,7 +32,7 @@ export default function Rides() {
   const calendarYearMetrics = useActivitiesStore(rideFilteredByDateMetrics(DateSection.CalendarYear));
   const athlete = useActivitiesStore(athleteId);
   const [calendarYearOptions, setCalendarYearOptions] = useState<string[]>([]);
-  const firstYear = useActivitiesStore(firstRideYear);
+  const firstYear = useActivitiesStore(state => firstActiveYearBySport(rideSports, state));
 
   const { loginToStravaAction } = useAuth();
 
@@ -69,8 +75,33 @@ export default function Rides() {
         </StatsSection>
       </PageSection>
 
-      {/* Past four weeks metrics */}
-      <PageSection title="Past four weeks">
+      {/* Best rides ever */}
+      <PageSection title="Best rides ever" icon="trophy">
+        <StatsSection>
+          {loading ? (
+            <>
+              <MetricCardSkeleton title="Longest ride" />
+              <MetricCardSkeleton title="Highest elevation" />
+              <MetricCardSkeleton title="Max duration" />
+              <MetricCardSkeleton title="Fastest ride" />
+            </>
+          ) : (
+            <>
+              <MetricCard title="Longest ride" value={Number(allTimeMetrics.maxDistanceKm.toFixed())} unit="km" />
+              <MetricCard
+                title="Highest elevation"
+                value={Number(allTimeMetrics.maxElevationInMeters.toFixed())}
+                unit="m"
+              />
+              <MetricCard title="Max duration" value={Number(allTimeMetrics.maxDurationInHours.toFixed())} unit="h" />
+              <MetricCard title="Fastest ride" value={Number(allTimeMetrics.maxSpeedKmPerHour.toFixed())} unit="km/h" />
+            </>
+          )}
+        </StatsSection>
+      </PageSection>
+
+      {/* All time metrics */}
+      <PageSection title="All times">
         <StatsSection>
           {loading ? (
             <>
@@ -81,50 +112,10 @@ export default function Rides() {
             </>
           ) : (
             <>
-              <MetricCard title="Activities" value={pastFourWeeksMetrics.totalActivities.length} />
-              <MetricCard title="Distance" value={Number(pastFourWeeksMetrics.totalKm.toFixed())} unit="km" />
-              <MetricCard
-                title="Elevation"
-                value={Number(pastFourWeeksMetrics.totalElevationInMeters.toFixed())}
-                unit="m"
-              />
-              <MetricCard
-                title="Duration"
-                value={Number(pastFourWeeksMetrics.totalDurationInHours.toFixed())}
-                unit="h"
-              />
-            </>
-          )}
-        </StatsSection>
-        <StatsSection>
-          {loading ? (
-            <ChartSkeleton title="Over time" />
-          ) : (
-            <>
-              <ChartsSection
-                charts={[
-                  {
-                    type: 'line',
-                    value: 'activities',
-                    data: pastFourWeeksMetrics.totalActivitiesSplitByWeek,
-                    key1: 'week',
-                    key2: 'activities',
-                  },
-                  {
-                    type: 'bar',
-                    value: 'distance',
-                    data: pastFourWeeksMetrics.totalKmByDateSplitByWeek,
-                    key1: 'week',
-                    key2: 'km',
-                  },
-                  {
-                    type: 'line',
-                    value: 'elevation',
-                    data: pastFourWeeksMetrics.totalElevationInMetersSplitByWeek,
-                    key1: 'week',
-                    key2: 'meters',
-                  },
-                ]}></ChartsSection>
+              <MetricCard title="Activities" value={allTimeMetrics.totalActivities} />
+              <MetricCard title="Distance" value={Number(allTimeMetrics.totalKm.toFixed())} unit="km" />
+              <MetricCard title="Elevation" value={Number(allTimeMetrics.totalElevationInMeters.toFixed())} unit="m" />
+              <MetricCard title="Duration" value={Number(allTimeMetrics.totalDurationInHours.toFixed())} unit="h" />
             </>
           )}
         </StatsSection>
@@ -197,8 +188,8 @@ export default function Rides() {
         </StatsSection>
       </PageSection>
 
-      {/* All time metrics */}
-      <PageSection title="All times">
+      {/* Past four weeks metrics */}
+      <PageSection title="Past four weeks">
         <StatsSection>
           {loading ? (
             <>
@@ -209,35 +200,50 @@ export default function Rides() {
             </>
           ) : (
             <>
-              <MetricCard title="Activities" value={allTimeMetrics.totalActivities} />
-              <MetricCard title="Distance" value={Number(allTimeMetrics.totalKm.toFixed())} unit="km" />
-              <MetricCard title="Elevation" value={Number(allTimeMetrics.totalElevationInMeters.toFixed())} unit="m" />
-              <MetricCard title="Duration" value={Number(allTimeMetrics.totalDurationInHours.toFixed())} unit="h" />
+              <MetricCard title="Activities" value={pastFourWeeksMetrics.totalActivities.length} />
+              <MetricCard title="Distance" value={Number(pastFourWeeksMetrics.totalKm.toFixed())} unit="km" />
+              <MetricCard
+                title="Elevation"
+                value={Number(pastFourWeeksMetrics.totalElevationInMeters.toFixed())}
+                unit="m"
+              />
+              <MetricCard
+                title="Duration"
+                value={Number(pastFourWeeksMetrics.totalDurationInHours.toFixed())}
+                unit="h"
+              />
             </>
           )}
         </StatsSection>
-      </PageSection>
-
-      {/* Best rides ever */}
-      <PageSection title="Best rides ever" icon="trophy">
         <StatsSection>
           {loading ? (
-            <>
-              <MetricCardSkeleton title="Longest ride" />
-              <MetricCardSkeleton title="Highest elevation" />
-              <MetricCardSkeleton title="Max duration" />
-              <MetricCardSkeleton title="Fastest ride" />
-            </>
+            <ChartSkeleton title="Over time" />
           ) : (
             <>
-              <MetricCard title="Longest ride" value={Number(allTimeMetrics.maxDistanceKm.toFixed())} unit="km" />
-              <MetricCard
-                title="Highest elevation"
-                value={Number(allTimeMetrics.maxElevationInMeters.toFixed())}
-                unit="m"
-              />
-              <MetricCard title="Max duration" value={Number(allTimeMetrics.maxDurationInHours.toFixed())} unit="h" />
-              <MetricCard title="Fastest ride" value={Number(allTimeMetrics.maxSpeedKmPerHour.toFixed())} unit="km/h" />
+              <ChartsSection
+                charts={[
+                  {
+                    type: 'line',
+                    value: 'activities',
+                    data: pastFourWeeksMetrics.totalActivitiesSplitByWeek,
+                    key1: 'week',
+                    key2: 'activities',
+                  },
+                  {
+                    type: 'bar',
+                    value: 'distance',
+                    data: pastFourWeeksMetrics.totalKmByDateSplitByWeek,
+                    key1: 'week',
+                    key2: 'km',
+                  },
+                  {
+                    type: 'line',
+                    value: 'elevation',
+                    data: pastFourWeeksMetrics.totalElevationInMetersSplitByWeek,
+                    key1: 'week',
+                    key2: 'meters',
+                  },
+                ]}></ChartsSection>
             </>
           )}
         </StatsSection>
