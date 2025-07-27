@@ -4,10 +4,11 @@ import { createSelector } from 'reselect';
 import { DateSection } from '@/interfaces/project';
 import { Activity, rideSports, SportTypes } from '@/interfaces/strava';
 
-const filterBySport = (activities: Activity[], sport: SportTypes | SportTypes[]) =>
-  Array.isArray(sport)
+const filterBySport = (activities: Activity[], sport: SportTypes | SportTypes[]) => {
+  return Array.isArray(sport)
     ? activities.filter(activity => sport.includes(activity.type as SportTypes))
     : activities.filter(activity => activity.type === sport);
+};
 
 const filterByDate = (activities: Activity[], from: string, to: string) =>
   activities.filter(
@@ -29,7 +30,7 @@ export const athleteId = (state: ActivityState): number => {
 
 export const firstActiveYearBySport = (sport: SportTypes | SportTypes[], state: ActivityState): string | undefined => {
   const filtered = filterBySport(state.activities, sport);
-  return filtered?.[0]?.start_date?.split('-')[0] ?? undefined;
+  return filtered?.[filtered.length - 1]?.start_date?.split('-')[0] ?? undefined;
 };
 
 /* ACTIVITY METRICS */

@@ -77,3 +77,12 @@ export const authorizeStrava = async () => {
     toast.error('Failed to get Strava authorization URL');
   }
 };
+
+export const getUser = async () => {
+  const response = await fetch(`${apiUrl}/users/me`, {
+    method: 'GET',
+    headers,
+  });
+
+  return response.json();
+};

@@ -30,7 +30,7 @@ export default function Runs() {
   const calendarYearMetrics = useActivitiesStore(runFilteredByDateMetrics(DateSection.CalendarYear));
   const athlete = useActivitiesStore(athleteId);
   const [calendarYearOptions, setCalendarYearOptions] = useState<string[]>([]);
-  const firstYear = useActivitiesStore(state => firstActiveYearBySport(SportTypes.Hike, state));
+  const firstYear = useActivitiesStore(state => firstActiveYearBySport(SportTypes.Run, state));
 
   useEffect(() => {
     if (firstYear) {
