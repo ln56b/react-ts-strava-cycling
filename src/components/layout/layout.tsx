@@ -20,9 +20,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="lg:grid lg:grid-cols-12">
         <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
         <div className="col-span-12 lg:col-span-10 ">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center w-full">
             {username && <p className="flex italic pl-12 lg:pl-2">Hi {username}!</p>}
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center justify-end ml-auto">
               <Switch onClick={toggleTheme}>Toggle Theme</Switch>
               <Button variant="outline" onClick={logout}>
                 Logout
