@@ -341,9 +341,21 @@ const highestCountOfConsecutiveActiveDaysBySport = (sport: SportTypes | SportTyp
 };
 
 const sortedDistancesKmBySport = (sport: SportTypes | SportTypes[], state: ActivityState): number[] => {
-  return filterBySport(state.activities, sport)
-    .map(activity => activity.distance / 1000)
-    .sort((a, b) => b - a);
+  const activities = filterBySport(state.activities, sport);
+
+  const grouped: { [key: string]: number } = {};
+  activities.forEach(activity => {
+    const day = activity.start_date.split('T')[0];
+    if (rideSports.includes(activity.type as SportTypes)) {
+      const key = `rideSports_${day}`;
+      grouped[key] = (grouped[key] || 0) + activity.distance / 1000;
+    } else {
+      const key = `${activity.sport_type}_${day}`;
+      grouped[key] = (grouped[key] || 0) + activity.distance / 1000;
+    }
+  });
+
+  return Object.values(grouped).sort((a, b) => b - a);
 };
 
 const eddingtonMetrics = (
@@ -356,6 +368,7 @@ const eddingtonMetrics = (
 } => {
   // E is the largest integer such that there are at least E activities with more than E km
   // For example, if there are 10 activities with more than 10 km, the eddington number is 10
+  // However we cumulate distances of same day (start_date) and same sportType
   const distancesKm = sortedDistancesKmBySport(rideSports, state);
 
   let E = 0;
