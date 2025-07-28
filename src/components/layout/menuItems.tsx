@@ -33,6 +33,9 @@ export default function MenuItems() {
       <Link to="/runs" className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}>
         <MenuItemDiv theme={theme} title="Runs" icon="person-running" />
       </Link>
+      <Link to="/gears" className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}>
+        <MenuItemDiv theme={theme} title="Gears" icon="gears" />
+      </Link>
       <Link to="/activity-list" className={`${!loggedInToStrava ? 'pointer-events-none' : ''}`}>
         <MenuItemDiv theme={theme} title="Activity List" icon="list" />
       </Link>
