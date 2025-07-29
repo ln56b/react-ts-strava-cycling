@@ -6,7 +6,7 @@ import { ArrowUpDown } from 'lucide-react';
 
 export interface ActivityTableFields
   extends Activity,
-    Pick<Activity, 'name' | 'start_date' | 'sport_type' | 'distance' | 'moving_time'> {}
+    Pick<Activity, 'name' | 'start_date' | 'sport_type' | 'distance' | 'elev_high' | 'moving_time'> {}
 
 export const columns: ColumnDef<ActivityTableFields>[] = [
   {
@@ -50,6 +50,20 @@ export const columns: ColumnDef<ActivityTableFields>[] = [
     },
     cell: ({ row }) => {
       return <div>{Number((row.original.distance / 1000).toFixed(2))} km</div>;
+    },
+  },
+  {
+    accessorKey: 'elev_high',
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          Elevation
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{row.original.elev_high ? row.original.elev_high : 'None'} m</div>;
     },
   },
   {

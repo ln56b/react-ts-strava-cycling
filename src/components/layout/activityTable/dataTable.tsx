@@ -9,12 +9,14 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   PaginationState,
+  VisibilityState,
 } from '@tanstack/react-table';
+import { useMediaQuery } from '@react-hook/media-query';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ActivityTableFields } from './columns';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Selector from '@/components/ui/selector';
 import { SportTypes } from '@/interfaces/strava';
 
@@ -26,6 +28,9 @@ interface ActivityDataTableProps {
 export function ActivityDataTable({ columns, data }: ActivityDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const mobile = useMediaQuery('(max-width: 640px)');
+  const tablet = useMediaQuery('(max-width: 768px)');
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
@@ -41,13 +46,33 @@ export function ActivityDataTable({ columns, data }: ActivityDataTableProps) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
     onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
 
     state: {
       sorting,
+      columnVisibility,
       columnFilters,
       pagination,
     },
   });
+
+  useEffect(() => {
+    if (mobile) {
+      setColumnVisibility({
+        sport_type: false,
+        moving_time: false,
+        distance: false,
+        elev_high: false,
+      });
+    } else if (tablet) {
+      setColumnVisibility({
+        sport_type: false,
+        moving_time: false,
+      });
+    } else {
+      setColumnVisibility({});
+    }
+  }, [mobile, tablet]);
 
   return (
     <>

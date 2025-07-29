@@ -44,14 +44,14 @@ export const getColumns = (
   },
   {
     accessorKey: 'notifyThreshold',
-    header: 'Notify Threshold',
+    header: 'Threshold',
     cell: ({ row }) => {
-      return <div>{row.original.notifyThreshold ? row.original.notifyThreshold : 'No threshold'}</div>;
+      return <div>{row.original.notifyThreshold ? row.original.notifyThreshold : 'None'}</div>;
     },
   },
   {
     accessorKey: 'ShowNotifications',
-    header: 'Show Notifications',
+    header: 'Notifications',
     cell: ({ row }) => {
       return <div>{row.original.showNotifications ? 'Yes' : 'No'}</div>;
     },

@@ -5,10 +5,12 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table';
+import { useMediaQuery } from '@react-hook/media-query';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GearTableFields } from './columns';
 
 interface GearDataTableProps {
@@ -19,6 +21,9 @@ interface GearDataTableProps {
 
 export function GearDataTable({ columns, data, title }: GearDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const mobile = useMediaQuery('(max-width: 640px)');
+  const tablet = useMediaQuery('(max-width: 768px)');
 
   const table = useReactTable({
     data,
@@ -26,11 +31,30 @@ export function GearDataTable({ columns, data, title }: GearDataTableProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
 
     state: {
       sorting,
+      columnVisibility,
     },
   });
+
+  useEffect(() => {
+    if (mobile) {
+      setColumnVisibility({
+        brand: false,
+        model: false,
+        distance: false,
+      });
+    } else if (tablet) {
+      setColumnVisibility({
+        brand: false,
+        model: false,
+      });
+    } else {
+      setColumnVisibility({});
+    }
+  }, [mobile, tablet]);
 
   return (
     <>
