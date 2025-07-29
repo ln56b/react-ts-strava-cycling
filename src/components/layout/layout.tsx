@@ -8,6 +8,7 @@ import molletsCassoulet from '@/assets/mollets-cassoulet-full.svg';
 import stravaWhite from '@/assets/strava-white.svg';
 import stravaBlack from '@/assets/strava-black.svg';
 import { useUserStore } from '@/stores/userStore';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { logout } = useAuth();
@@ -21,9 +22,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
         <div className="col-span-12 lg:col-span-10 ">
           <div className="flex items-center w-full">
-            {username && <p className="flex italic pl-12 lg:pl-2">Hi {username}!</p>}
             <div className="flex gap-2 items-center justify-end ml-auto">
-              <Switch onClick={toggleTheme}>Toggle Theme</Switch>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Switch onClick={toggleTheme}></Switch>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Switch to {theme === 'dark' ? 'light' : 'dark'} mode</p>
+                </TooltipContent>
+              </Tooltip>
+              {username && <p className="flex pl-12 lg:pl-3">You are {username}</p>}
               <Button variant="outline" onClick={logout}>
                 Logout
               </Button>
