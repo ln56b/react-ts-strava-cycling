@@ -6,7 +6,8 @@ export default function ActivityList() {
   const { activities } = useActivitiesStore();
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="lg:px-3">
+      <h2 className="text-3xl font-bold text-center my-2">Activity List</h2>
       <ActivityDataTable columns={columns} data={activities} />
     </div>
   );

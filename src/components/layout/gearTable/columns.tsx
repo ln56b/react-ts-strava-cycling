@@ -1,11 +1,23 @@
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Gear } from '@/interfaces/strava';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 
-export interface GearTableFields extends Gear, Pick<Gear, 'name' | 'distance' | 'brand' | 'model'> {}
+export interface GearTableFields
+  extends Gear,
+    Pick<Gear, 'name' | 'distance' | 'brand' | 'model' | 'notifyThreshold' | 'showNotifications'> {}
 
-export const columns: ColumnDef<GearTableFields>[] = [
+export const getColumns = (
+  openEditThresholdDialog: (gear: GearTableFields) => void,
+  openToggleNotificationsDialog: (gear: GearTableFields) => void,
+  openDeleteNotificationsDialog: (gear: GearTableFields) => void,
+): ColumnDef<GearTableFields>[] => [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -29,5 +41,46 @@ export const columns: ColumnDef<GearTableFields>[] = [
   },
   {
     accessorKey: 'model',
+  },
+  {
+    accessorKey: 'notifyThreshold',
+    header: 'Notify Threshold',
+    cell: ({ row }) => {
+      return <div>{row.original.notifyThreshold ? row.original.notifyThreshold : 'No threshold'}</div>;
+    },
+  },
+  {
+    accessorKey: 'ShowNotifications',
+    header: 'Show Notifications',
+    cell: ({ row }) => {
+      return <div>{row.original.showNotifications ? 'Yes' : 'No'}</div>;
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => openEditThresholdDialog(row.original)}>
+              {' '}
+              <i className="fa-solid fa-flag"></i>Threshold
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openToggleNotificationsDialog(row.original)}>
+              <i className="fa-solid fa-bell"></i>Notifications
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openDeleteNotificationsDialog(row.original)}>
+              <i className="fa-solid fa-trash"></i>Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];

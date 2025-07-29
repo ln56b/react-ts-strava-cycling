@@ -14,9 +14,10 @@ import { GearTableFields } from './columns';
 interface GearDataTableProps {
   columns: ColumnDef<GearTableFields, unknown>[];
   data: GearTableFields[];
+  title: string;
 }
 
-export function GearDataTable({ columns, data }: GearDataTableProps) {
+export function GearDataTable({ columns, data, title }: GearDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
@@ -33,7 +34,7 @@ export function GearDataTable({ columns, data }: GearDataTableProps) {
 
   return (
     <>
-      <div className="flex items-center py-4"></div>
+      <h1 className="text-xl font-semibold text-center">{title}</h1>
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>

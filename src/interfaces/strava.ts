@@ -112,8 +112,14 @@ export interface StravaGear {
   description: string;
 }
 
+export type GearType = 'bike' | 'shoe';
+
 export interface Gear extends Pick<StravaGear, 'id' | 'primary' | 'name' | 'distance'> {
   brand?: string;
   model?: string;
   athleteId: string;
+  type: GearType;
+  showNotifications: boolean;
+  notifyThreshold?: number;
+  uuid: string;
 }

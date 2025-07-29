@@ -27,6 +27,26 @@ export const loadGears = async (): Promise<Gear[] | undefined> => {
   return data;
 };
 
+export const updateGear = async (gear: Partial<Gear>): Promise<Gear | undefined> => {
+  const response = await fetch(`${apiUrl}/gears/${gear.uuid}`, {
+    headers,
+    method: 'PUT',
+    body: JSON.stringify(gear),
+  });
+
+  const data = await response.json();
+  return data;
+};
+
+export const deleteGear = async (gearUuid: string): Promise<boolean> => {
+  const response = await fetch(`${apiUrl}/gears/${gearUuid}`, {
+    headers,
+    method: 'DELETE',
+  });
+
+  return response.ok;
+};
+
 const checkStravaTokensValidity = async () => {
   const tokenExpiresAt = localStorage.getItem('tokenExpiresAt');
 
