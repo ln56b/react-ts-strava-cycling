@@ -2,72 +2,54 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  SortingState,
   getSortedRowModel,
-  ColumnFiltersState,
-  getFilteredRowModel,
-  PaginationState,
+  SortingState,
+  useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { useMediaQuery } from '@react-hook/media-query';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ActivityTableFields } from './columns';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import Selector from '@/components/ui/selector';
-import { SportTypes } from '@/interfaces/strava';
+import { GearTableFields } from './columns';
 
-interface ActivityDataTableProps {
-  columns: ColumnDef<ActivityTableFields, unknown>[];
-  data: ActivityTableFields[];
+interface GearDataTableProps {
+  columns: ColumnDef<GearTableFields, unknown>[];
+  data: GearTableFields[];
+  title: string;
 }
 
-export function ActivityDataTable({ columns, data }: ActivityDataTableProps) {
+export function GearDataTable({ columns, data, title }: GearDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const mobile = useMediaQuery('(max-width: 640px)');
   const tablet = useMediaQuery('(max-width: 768px)');
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 20,
-  });
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
 
     state: {
       sorting,
       columnVisibility,
-      columnFilters,
-      pagination,
     },
   });
 
   useEffect(() => {
     if (mobile) {
       setColumnVisibility({
-        sport_type: false,
-        moving_time: false,
+        brand: false,
+        model: false,
         distance: false,
-        elev_high: false,
       });
     } else if (tablet) {
       setColumnVisibility({
-        sport_type: false,
-        moving_time: false,
+        brand: false,
+        model: false,
       });
     } else {
       setColumnVisibility({});
@@ -76,17 +58,7 @@ export function ActivityDataTable({ columns, data }: ActivityDataTableProps) {
 
   return (
     <>
-      <div className="flex items-center py-4">
-        <Selector
-          options={['All', ...Object.values(SportTypes)]}
-          value={(table.getColumn('sport_type')?.getFilterValue() as string) || 'All'}
-          onHandleChange={value =>
-            value === 'All'
-              ? table.getColumn('sport_type')?.setFilterValue(undefined)
-              : table.getColumn('sport_type')?.setFilterValue(value)
-          }
-        />
-      </div>
+      <h1 className="text-xl font-semibold text-center">{title}</h1>
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -120,19 +92,6 @@ export function ActivityDataTable({ columns, data }: ActivityDataTableProps) {
             )}
           </TableBody>
         </Table>
-
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div>
       </div>
     </>
   );

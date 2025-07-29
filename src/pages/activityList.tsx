@@ -3,11 +3,12 @@ import { ActivityDataTable } from '@/components/layout/activityTable/dataTable';
 import { useActivitiesStore } from '@/stores/activitiesStore';
 
 export default function ActivityList() {
-  const { activities: allActivities } = useActivitiesStore();
+  const { activities } = useActivitiesStore();
 
   return (
-    <div className="container mx-auto py-10">
-      <ActivityDataTable columns={columns} data={allActivities} />
+    <div className="lg:px-3">
+      <h2 className="text-3xl font-bold text-center my-2">Activity List</h2>
+      <ActivityDataTable columns={columns} data={activities} />
     </div>
   );
 }

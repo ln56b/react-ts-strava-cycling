@@ -1,13 +1,13 @@
+import molletsCassoulet from '@/assets/mollets-cassoulet-full.svg';
+import stravaBlack from '@/assets/strava-black.svg';
+import stravaWhite from '@/assets/strava-white.svg';
 import { useAuth } from '@/providers/authProvider';
 import { useTheme } from '@/providers/themeProvider';
+import { useUserStore } from '@/stores/userStore';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
 import Menu from './menu';
-import { useState } from 'react';
-import molletsCassoulet from '@/assets/mollets-cassoulet-full.svg';
-import stravaWhite from '@/assets/strava-white.svg';
-import stravaBlack from '@/assets/strava-black.svg';
-import { useUserStore } from '@/stores/userStore';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { logout } = useAuth();
@@ -21,9 +21,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
         <div className="col-span-12 lg:col-span-10 ">
           <div className="flex items-center w-full">
-            {username && <p className="flex italic pl-12 lg:pl-2">Hi {username}!</p>}
+            {username && <p className="flex pl-12 lg:pl-3 italic">You are {username}</p>}
             <div className="flex gap-2 items-center justify-end ml-auto">
-              <Switch onClick={toggleTheme}>Toggle Theme</Switch>
+              <Switch onClick={toggleTheme}></Switch>
               <Button variant="outline" onClick={logout}>
                 Logout
               </Button>

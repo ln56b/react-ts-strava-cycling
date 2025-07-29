@@ -99,3 +99,27 @@ export interface Activity
   > {
   athleteId: number;
 }
+
+export interface StravaGear {
+  id: string;
+  resource_state: number;
+  primary: boolean;
+  name: string;
+  distance: number;
+  brand_name: string;
+  model_name: string;
+  frame_type: number;
+  description: string;
+}
+
+export type GearType = 'bike' | 'shoe';
+
+export interface Gear extends Pick<StravaGear, 'id' | 'primary' | 'name' | 'distance'> {
+  brand?: string;
+  model?: string;
+  athleteId: string;
+  type: GearType;
+  showNotifications: boolean;
+  notifyThreshold?: number;
+  uuid: string;
+}

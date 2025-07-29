@@ -13,6 +13,7 @@ import AuthProvider from './providers/authProvider';
 import ThemeProvider from './providers/themeProvider';
 import StravaRoute from './guards/stravaRoute';
 import ActivityList from './pages/activityList';
+import GearList from './pages/gearList';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ function App() {
                     <Route path="/rides" element={<Rides />} />
                     <Route path="/hikes" element={<Hikes />} />
                     <Route path="/runs" element={<Runs />} />
+                    <Route path="/gears" element={<GearList />} />
                     <Route path="/activity-list" element={<ActivityList />} />
                   </Route>
                 </Route>

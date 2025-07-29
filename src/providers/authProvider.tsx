@@ -1,6 +1,7 @@
 import { login, signup } from '@/services/auth.service';
 import { postStravaToken } from '@/services/users.service';
 import { activitiesInitialState, useActivitiesStore } from '@/stores/activitiesStore';
+import { useGearsStore } from '@/stores/gearsStore';
 import { userInitialState, useUserStore } from '@/stores/userStore';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -84,6 +85,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       useUserStore.getState().setUsername();
       // One single initial fetch of all activities
       useActivitiesStore.getState().fetchActivities();
+      useGearsStore.getState().fetchGears();
       return;
     } else {
       toast.error(res.message);
