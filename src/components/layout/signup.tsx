@@ -9,13 +9,19 @@ import { Link } from 'react-router';
 import molletsCassoulet from '@/assets/mollets-cassoulet-full.svg';
 import stravaWhite from '@/assets/strava-white.svg';
 
+const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/);
+
 const signupSchema = z.object({
   email: z.string().email().min(2, {
     message: 'Email should be at least 2 characters',
   }),
-  password: z.string().min(3, {
-    message: 'Password should be at least 3 characters',
-  }),
+  password: z
+    .string()
+
+    .regex(passwordValidation, {
+      message:
+        'Password should be at least 12 characters and contain at least one uppercase letter, one lowercase letter, one number and one special character',
+    }),
 });
 
 export default function Signup() {
